@@ -76,7 +76,6 @@ Organisations cannot self-register as a manufacturer: they apply, stay
 contract/      Hardhat 3 project — MedicineRegistry smart contract and tests
 apps/api/      NestJS backend
 apps/web/      Next.js frontend
-PROJECT.md     Full design document
 ```
 
 ## Getting started
@@ -99,5 +98,4 @@ npm run dev
 
 ## Documentation
 
-The full design — architecture, Merkle mechanism, clone-detection rules,
-contract spec, data model, roadmap — is in [PROJECT.md](PROJECT.md).
+
