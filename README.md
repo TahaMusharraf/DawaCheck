@@ -73,7 +73,7 @@ Organisations cannot self-register as a manufacturer: they apply, stay
 ## Repository structure
 
 ```
-contracts/     Hardhat 3 project — MedicineRegistry smart contract and tests
+contract/      Hardhat 3 project — MedicineRegistry smart contract and tests
 apps/api/      NestJS backend
 apps/web/      Next.js frontend
 PROJECT.md     Full design document
@@ -84,7 +84,7 @@ PROJECT.md     Full design document
 Requires Node.js 22+.
 
 ```bash
-cd contracts
+cd contract
 npm install
 npx hardhat test
 

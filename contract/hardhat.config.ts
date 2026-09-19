@@ -3,14 +3,21 @@ import { configVariable, defineConfig } from "hardhat/config";
 
 export default defineConfig({
   plugins: [hardhatToolboxMochaEthersPlugin],
+  paths: {
+    sources: "./contract",
+  },
   solidity: {
     profiles: {
       default: {
         version: "0.8.34",
+        settings: {
+          evmVersion: "cancun",
+        },
       },
       production: {
         version: "0.8.34",
         settings: {
+          evmVersion: "cancun",
           optimizer: {
             enabled: true,
             runs: 200,
@@ -24,15 +31,12 @@ export default defineConfig({
       type: "edr-simulated",
       chainType: "l1",
     },
-    hardhatOp: {
-      type: "edr-simulated",
-      chainType: "op",
-    },
-    sepolia: {
+    amoy: {
       type: "http",
-      chainType: "l1",
-      url: configVariable("SEPOLIA_RPC_URL"),
-      accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
+      chainType: "generic",
+      chainId: 80002,
+      url: configVariable("AMOY_RPC_URL"),
+      accounts: [configVariable("AMOY_PRIVATE_KEY")],
     },
   },
 });
