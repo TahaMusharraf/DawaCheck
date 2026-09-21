@@ -11,3 +11,5 @@ cache/
 types/
 coverage/
 PROJECT.md
+# Prisma client is generated from the schema on install
+apps/api/src/generated/
