@@ -65,7 +65,7 @@ Organisations cannot self-register as a manufacturer: they apply, stay
 
 | Layer | Tools |
 |---|---|
-| Blockchain | Solidity, Hardhat 3, OpenZeppelin, ethers.js v6, Polygon Amoy |
+| Blockchain | Solidity, Remix, OpenZeppelin, ethers.js v6, Polygon Amoy |
 | Backend | NestJS, Prisma, PostgreSQL, Redis + BullMQ |
 | Frontend | Next.js, Tailwind CSS, shadcn/ui, html5-qrcode |
 | Hosting | Vercel (web), Render (API), Neon (DB), Upstash (Redis), Pinata (IPFS) |
@@ -73,7 +73,7 @@ Organisations cannot self-register as a manufacturer: they apply, stay
 ## Repository structure
 
 ```
-contract/      Hardhat 3 project — MedicineRegistry smart contract and tests
+contracts/     MedicineRegistry contract source and ABI (written in Remix)
 apps/api/      NestJS backend
 apps/web/      Next.js frontend
 ```
@@ -83,10 +83,6 @@ apps/web/      Next.js frontend
 Requires Node.js 22+.
 
 ```bash
-cd contract
-npm install
-npx hardhat test
-
 cd apps/api
 npm install
 PORT=4000 npm run start:dev
