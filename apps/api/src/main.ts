@@ -27,6 +27,7 @@ async function bootstrap() {
     )
     .setVersion('0.1')
     .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+    .addSecurityRequirements('bearer')
     .addTag('health', 'Liveness and readiness probes')
     .addTag('chain', 'Read-only window onto the MedicineRegistry contract')
     .build();
