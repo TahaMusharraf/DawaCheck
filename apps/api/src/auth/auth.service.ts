@@ -37,6 +37,7 @@ export class AuthService {
                     },
                 },
             },
+            include: { users: { select: { id: true } } },
         });
 
         if (!org) {
@@ -52,7 +53,7 @@ export class AuthService {
                     city: org.city,
                     email: dto.email,
             },
-            accessToken: await this.jwtService.signAsync({ email: dto.email, orgId: org.id, role: 'ADMIN' })
+            accessToken: await this.jwtService.signAsync({ sub: org.users[0].id, orgId: org.id })
         }
     }
 
@@ -80,7 +81,7 @@ export class AuthService {
                 email: user.email,
                 role: user.role,
             },
-            accessToken: await this.jwtService.signAsync({ email: user.email, orgId: user.orgId, role: user.role })
+            accessToken: await this.jwtService.signAsync({ sub: user.id, orgId: user.orgId })
         };
     }
 
