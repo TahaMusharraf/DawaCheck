@@ -15,6 +15,13 @@ export const envSchema = z.object({
     .optional(),
   JWT_SECRET: z.string().min(32, 'must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('1d'),
+  REGULATOR_PRIVATE_KEY: z
+  .string()
+  .regex(/^0x[a-fA-F0-9]{64}$/, 'must be a 0x-prefixed 32-byte private key')
+  .optional(),
+  WALLET_MNEMONIC: z.string().optional(),
+  ORG_WALLET_FUNDING: z.string().default('0.05'),
+
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -60,6 +60,8 @@ model Organization {
   city           String
   /// Custodial wallet, created by the backend when the regulator approves.
   walletAddress  String?   @unique
+  walletIndex    Int      @unique @default(autoincrement())
+  licenseTxHash  String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
