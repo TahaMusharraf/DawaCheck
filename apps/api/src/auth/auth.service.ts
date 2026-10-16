@@ -2,8 +2,8 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import * as argon2 from 'argon2';
-import { JwtService } from 'node_modules/@nestjs/jwt/dist/jwt.service';
-import { access } from 'fs';
+import { JwtService } from '@nestjs/jwt';
+import { UserRole } from 'src/generated/prisma/browser';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
                     create: {
                         email: dto.email,
                         passwordHash: hashedPassword,
-                        role: 'ADMIN'
+                        role: UserRole.ADMIN,
                     },
                 },
             },
