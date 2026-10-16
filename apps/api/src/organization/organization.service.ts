@@ -22,7 +22,10 @@ export class OrganizationService {
                 status: query.status
             },
         });
-        return organization;
+        return {
+            message: 'Organizations fetched successfully',
+            data: organization
+        };
     }
 
     async getOrganizationById(orgId: any){
@@ -34,7 +37,10 @@ export class OrganizationService {
 
         if (!organization) throw new NotFoundException("Organization Not Found")
 
-        return organization;
+        return {
+            message: 'Organization fetched successfully',
+            data: organization
+        };
     }
 
     async approveOrganization(orgId: string) {
@@ -77,7 +83,10 @@ export class OrganizationService {
             }
         })
         
-        return updatedOrg;
+        return {
+            message: 'Organization approved successfully',
+            data: updatedOrg
+        };
     }
 
     async revokeOrganization(orgId: string) {
@@ -113,6 +122,9 @@ export class OrganizationService {
             }
         })
 
-        return updatedOrg;
+        return {
+            message: 'Organization revoked successfully',
+            data: updatedOrg
+        };
     }
 }

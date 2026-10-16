@@ -136,6 +136,36 @@ export class ChainWriterService implements OnModuleInit {
     );
   }
 
+  /**
+   * Anchors a batch's Merkle root on-chain, signed by the manufacturer's own
+   * wallet so it passes onlyRole(MANUFACTURER_ROLE). Returns the tx hash.
+   */
+  registerBatch(
+    walletIndex: number,
+    batch: {
+      batchId: string;
+      merkleRoot: string;
+      quantity: number;
+      mfgDate: Date;
+      expiryDate: Date;
+    },
+  ): Promise<string> {
+    const registry = this.writableRegistry().connect(
+      this.orgWallet(walletIndex),
+    ) as Contract;
+    return this.send('registerBatch', () =>
+      registry.registerBatch(
+        batch.batchId,
+        batch.merkleRoot,
+        batch.quantity,
+        toUnixSeconds(batch.mfgDate),
+        toUnixSeconds(batch.expiryDate),
+        // metadataCID: filled in once IPFS uploads exist.
+        '',
+      ),
+    );
+  }
+
   /** Sends ORG_WALLET_FUNDING POL so a new org can pay its own gas. */
   fundWallet(address: string): Promise<string> {
     const signer = this.writableSigner();
@@ -201,13 +231,18 @@ function roleFor(type: OrgType): string {
   }
 }
 
+/** The contract stores uint64 unix seconds; JS dates are milliseconds. */
+function toUnixSeconds(date: Date): number {
+  return Math.floor(date.getTime() / 1000);
+}
+
 /** A short, safe reason: custom error name, revert string, or ethers' summary. */
 function describeChainError(error: unknown): string {
   if (isError(error, 'CALL_EXCEPTION')) {
     return error.revert?.name ?? error.reason ?? 'execution reverted';
   }
   if (isError(error, 'INSUFFICIENT_FUNDS')) {
-    return 'regulator wallet is out of POL';
+    return 'Wallet is out of POL';
   }
   const short = (error as { shortMessage?: string }).shortMessage;
   return short ?? (error instanceof Error ? error.message : 'unknown error');
