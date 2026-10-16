@@ -1,8 +1,12 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBatchDto } from './dto/batch.dto';
 import { toBatchId, toUnitHash, buildBatchTree, generateCodes } from 'src/merkle/merkle';
 import { ChainWriterService } from 'src/chain/chain-writer.service';
+import { ChainService } from 'src/chain/chain.service';
+import { AuthUser } from 'src/auth/types/auth-user';
+import { OrgType } from 'src/generated/prisma/browser';
+import { isHexString } from 'node_modules/ethers/lib.esm/utils/data';
 
 @Injectable()
 export class BatchesService {
@@ -10,6 +14,7 @@ export class BatchesService {
     constructor(
         private prismaService: PrismaService,
         private chainWriter: ChainWriterService,
+        private chainService: ChainService
     ) {}
 
     async createBatch(batchData: CreateBatchDto, manufacturerId: string) {
@@ -87,4 +92,119 @@ export class BatchesService {
             }
          };
     }
+
+    async getAllBatches() {
+        const batches = await this.prismaService.batch.findMany({
+            include: {
+                manufacturer: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return {
+            message: 'Batches fetched successfully',
+            data: batches
+        };  
+    }
+
+    async getBatchById(batchId: string, user?: AuthUser) {
+
+        if (!user?.org?.id || !batchId) {
+            throw new BadRequestException('Invalid request parameters');
+        }
+
+        const batch = await this.prismaService.batch.findUnique({
+            where: { batchId },
+            include: {
+                manufacturer: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                }
+            }
+        });
+
+        if (!batch || (user.org.type !== OrgType.MANUFACTURER && user.org.id !== batch.manufacturerId)) {
+            throw new NotFoundException('Batch not found');
+        }
+
+        return {
+            message: 'Batch fetched successfully',
+            data: batch
+        };
+    }
+
+    async verifyUnit(batchId: string, code: string) {   
+        
+        if (!isHexString(batchId, 32)) {
+            return {
+                message: 'Unit Verification Failed: Invalid Batch ID',
+                data: {
+                    verdict: 'NOT_REGISTERED',
+                    batch: null,
+                    manufacturer: null
+                }
+            }
+        }
+        
+        const unitHash = toUnitHash(batchId, code);
+
+        const unit = await this.prismaService.unit.findUnique({
+            where: { unitHash },
+            include: { batch: {
+                include: {
+                    manufacturer: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    }
+                }  
+            }
+        }});
+
+        if (!unit) {
+            return {
+                message: 'Unit Verification Failed: Unit not found',
+                data: {
+                    verdict: 'NOT_REGISTERED',
+                    batch: null,
+                    manufacturer: null
+                }
+            }
+        }
+
+        const status = await this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]);
+    
+        const verdict =
+            !status.valid ? 'NOT_REGISTERED'
+            : status.recalled ? 'RECALLED'
+            : status.expired ? 'EXPIRED'
+            : 'AUTHENTIC';
+
+        return {
+            message: 'Unit Verified From Chain',
+            data: {
+                verdict: verdict,
+                batch: {
+                    batchId: unit.batch.batchId,
+                    drugName: unit.batch.drugName,
+                    batchNumber: unit.batch.batchNumber,
+                },
+                manufacturer: {
+                    id: unit.batch.manufacturerId,
+                    name: unit.batch.manufacturer.name
+                },
+            }
+        }
+    }
+    
 }
