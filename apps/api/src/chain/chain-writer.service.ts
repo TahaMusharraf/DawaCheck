@@ -17,6 +17,7 @@ import {
   Mnemonic,
   NonceManager,
   parseEther,
+  type TransactionReceipt,
   Wallet,
   type TransactionResponse,
 } from 'ethers';
@@ -125,7 +126,7 @@ export class ChainWriterService implements OnModuleInit {
     const registry = this.writableRegistry();
     return this.send('licenseParty', () =>
       registry.licenseParty(address, roleFor(type), licenseNo),
-    );
+    ).then((receipt) => receipt.hash);
   }
 
   /** Removes the org's supply-chain role on-chain. Returns the tx hash. */
@@ -133,7 +134,7 @@ export class ChainWriterService implements OnModuleInit {
     const registry = this.writableRegistry();
     return this.send('revokeParty', () =>
       registry.revokeParty(address, roleFor(type)),
-    );
+    ).then((receipt) => receipt.hash);
   }
 
   /**
@@ -163,6 +164,26 @@ export class ChainWriterService implements OnModuleInit {
         // metadataCID: filled in once IPFS uploads exist.
         '',
       ),
+    ).then((receipt) => receipt.hash);
+  }
+
+  /** Moves units of a batch to a licensed distributor or pharmacy, 
+  * signed by the sender's wallet. Returns the receipt. */
+  transferCustody(
+    walletIndex: number,
+    batchId: string,
+    to: string,
+    quantity: number,
+  ): Promise<TransactionReceipt> {
+    const registry = this.writableRegistry().connect(
+      this.orgWallet(walletIndex),
+    ) as Contract;
+    return this.send('transferCustody', () =>
+      registry.transferCustody(
+        batchId, 
+        to, 
+        quantity
+      ),
     );
   }
 
@@ -171,14 +192,14 @@ export class ChainWriterService implements OnModuleInit {
     const signer = this.writableSigner();
     return this.send('fundWallet', () =>
       signer.sendTransaction({ to: address, value: this.fundingAmount }),
-    );
+    ).then((receipt) => receipt.hash);
   }
 
   /** Submits a tx, waits for it to be mined and turns chain errors into a 502. */
   private async send(
     action: string,
     submit: () => Promise<TransactionResponse>,
-  ): Promise<string> {
+  ): Promise<TransactionReceipt> {
     try {
       const tx = await submit();
       this.logger.log(`${action}: sent ${tx.hash}`);
@@ -187,7 +208,7 @@ export class ChainWriterService implements OnModuleInit {
       if (!receipt || receipt.status !== 1) {
         throw new BadGatewayException(`${action} failed on-chain (${tx.hash})`);
       }
-      return receipt.hash;
+      return receipt;
     } catch (error) {
       // A tx that failed before broadcast still used up a local nonce; resync it.
       this.signer?.reset();
