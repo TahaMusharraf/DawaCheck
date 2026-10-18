@@ -132,7 +132,7 @@ export class BatchesService {
             }
         });
 
-        if (!batch || (user.org.type !== OrgType.MANUFACTURER && user.org.id !== batch.manufacturerId)) {
+        if (!batch || (user.org.type === OrgType.MANUFACTURER && user.org.id !== batch.manufacturerId)) {
             throw new NotFoundException('Batch not found');
         }
 
@@ -188,6 +188,7 @@ export class BatchesService {
             !status.valid ? 'NOT_REGISTERED'
             : status.recalled ? 'RECALLED'
             : status.expired ? 'EXPIRED'
+            : status.sold ? 'SOLD'
             : 'AUTHENTIC';
 
         return {
@@ -197,6 +198,9 @@ export class BatchesService {
                 batch: {
                     batchId: unit.batch.batchId,
                     drugName: unit.batch.drugName,
+                    dosage: unit.batch.dosage,
+                    mfgDate: unit.batch.mfgDate,
+                    expiryDate: unit.batch.expiryDate,
                     batchNumber: unit.batch.batchNumber,
                 },
                 manufacturer: {

@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { OrganizationModule } from './organization/organization.module';
 import { BatchesModule } from './batches/batches.module';
+import { CustodyModule } from './custody/custody.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BatchesModule } from './batches/batches.module';
     AuthModule,
     OrganizationModule,
     BatchesModule,
+    CustodyModule,
   ],
 })
 export class AppModule {}
