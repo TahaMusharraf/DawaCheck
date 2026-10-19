@@ -194,6 +194,24 @@ export class ChainWriterService implements OnModuleInit {
       signer.sendTransaction({ to: address, value: this.fundingAmount }),
     ).then((receipt) => receipt.hash);
   }
+  
+  async markSold(
+    walletIndex: number, 
+    batchId: string,
+    unitHash: string,
+    proof: string[]
+  ): Promise<string> {
+    const registry = this.writableRegistry().connect(
+      this.orgWallet(walletIndex),
+    ) as Contract;
+    return this.send('markSold', () =>
+      registry.markSold(
+        batchId,
+        unitHash,
+        proof
+      ),
+    ).then((receipt) => receipt.hash)
+  }
 
   /** Submits a tx, waits for it to be mined and turns chain errors into a 502. */
   private async send(

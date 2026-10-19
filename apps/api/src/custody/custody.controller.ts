@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CustodyService } from './custody.service';
-import { TransferCustodyDto } from './dto/custody.dto';
+import { SellUnitDto, TransferCustodyDto } from './dto/custody.dto';
 import { CurrentUser, OrgTypes } from 'src/auth/decorator/decorators';
 import { type AuthUser } from 'src/auth/types/auth-user';
 import { OrgType } from 'src/generated/prisma/enums';
@@ -19,5 +19,17 @@ export class CustodyController {
   @Get('batch/:batchId')
   async history(@Param('batchId') batchId: string) {
     return this.custodyService.getBatchHistory(batchId)
+  }
+
+  @OrgTypes(OrgType.PHARMACY)
+  @Post('sell')
+  async sell(@Body() dto: SellUnitDto, @CurrentUser() user: AuthUser){
+    return this.custodyService.sellUnit(dto, user)
+  }
+
+  @OrgTypes(OrgType.DISTRIBUTOR, OrgType.MANUFACTURER, OrgType.PHARMACY)
+  @Get('custody/holdings')
+  async holdings(@CurrentUser() user: AuthUser) {
+    return this.custodyService.getHoldings(user)
   }
 }

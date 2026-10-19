@@ -202,6 +202,8 @@ export class BatchesService {
                     mfgDate: unit.batch.mfgDate,
                     expiryDate: unit.batch.expiryDate,
                     batchNumber: unit.batch.batchNumber,
+                    status: status.sold,
+                    soldAt: unit.soldAt
                 },
                 manufacturer: {
                     id: unit.batch.manufacturerId,

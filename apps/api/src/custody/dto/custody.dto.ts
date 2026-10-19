@@ -19,3 +19,15 @@ export class TransferCustodyDto {
     @ApiProperty()
     quantity!: number;
 }
+
+export class SellUnitDto {
+    @IsString()
+    @Matches(/^0x[0-9a-fA-F]{64}$/)
+    @ApiProperty()
+    batchId!: string;
+
+    @IsString()
+    @Matches(/^[0-9A-Fa-f]{16}$/)
+    @ApiProperty()
+    code!: string;
+}
