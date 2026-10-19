@@ -188,7 +188,6 @@ export class BatchesService {
             !status.valid ? 'NOT_REGISTERED'
             : status.recalled ? 'RECALLED'
             : status.expired ? 'EXPIRED'
-            : status.sold ? 'SOLD'
             : 'AUTHENTIC';
 
         return {
