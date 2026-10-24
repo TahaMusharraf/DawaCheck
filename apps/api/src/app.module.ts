@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { OrganizationModule } from './organization/organization.module';
 import { BatchesModule } from './batches/batches.module';
 import { CustodyModule } from './custody/custody.module';
+import { RecallsModule } from './recalls/recalls.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CustodyModule } from './custody/custody.module';
     OrganizationModule,
     BatchesModule,
     CustodyModule,
+    RecallsModule,
   ],
 })
 export class AppModule {}

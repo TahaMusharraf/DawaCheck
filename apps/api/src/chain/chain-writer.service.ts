@@ -195,7 +195,7 @@ export class ChainWriterService implements OnModuleInit {
     ).then((receipt) => receipt.hash);
   }
   
-  async markSold(
+  markSold(
     walletIndex: number, 
     batchId: string,
     unitHash: string,
@@ -210,6 +210,24 @@ export class ChainWriterService implements OnModuleInit {
         unitHash,
         proof
       ),
+    ).then((receipt) => receipt.hash)
+  }
+
+  recallBatch(
+    batchId: string,
+    reason: string,
+    walletIndex?: number,
+  ): Promise<string> {
+    const registry = walletIndex === undefined 
+      ? this.writableRegistry()
+      : this.writableRegistry().connect(
+        this.orgWallet(walletIndex)
+      ) as Contract;
+    return this.send('recallBatch', () =>
+      registry.recallBatch(
+        batchId,
+        reason
+      )
     ).then((receipt) => receipt.hash)
   }
 
