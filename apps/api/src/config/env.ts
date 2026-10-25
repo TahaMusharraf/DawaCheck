@@ -21,7 +21,10 @@ export const envSchema = z.object({
   .optional(),
   WALLET_MNEMONIC: z.string().optional(),
   ORG_WALLET_FUNDING: z.string().default('0.05'),
-
+  INDEXER_START_BLOCK: z.coerce.number().int().nonnegative().default(0),
+  INDEXER_BATCH_SIZE: z.coerce.number().int().positive().default(10),
+  INDEXER_POLL_MS: z.coerce.number().int().positive().default(15000),
+  INDEXER_CONFIRMATIONS: z.coerce.number().int().nonnegative().default(5),
 });
 
 export type Env = z.infer<typeof envSchema>;

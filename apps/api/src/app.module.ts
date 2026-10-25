@@ -9,6 +9,7 @@ import { OrganizationModule } from './organization/organization.module';
 import { BatchesModule } from './batches/batches.module';
 import { CustodyModule } from './custody/custody.module';
 import { RecallsModule } from './recalls/recalls.module';
+import { IndexerModule } from './indexer/indexer.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RecallsModule } from './recalls/recalls.module';
     BatchesModule,
     CustodyModule,
     RecallsModule,
+    IndexerModule,
   ],
 })
 export class AppModule {}
