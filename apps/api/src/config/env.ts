@@ -15,13 +15,17 @@ export const envSchema = z.object({
     .optional(),
   JWT_SECRET: z.string().min(32, 'must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('1d'),
+  SCAN_HASH_SALT: z.string().min(16, 'must be at least 16 characters'),
   REGULATOR_PRIVATE_KEY: z
   .string()
   .regex(/^0x[a-fA-F0-9]{64}$/, 'must be a 0x-prefixed 32-byte private key')
   .optional(),
   WALLET_MNEMONIC: z.string().optional(),
   ORG_WALLET_FUNDING: z.string().default('0.05'),
-
+  INDEXER_START_BLOCK: z.coerce.number().int().nonnegative().default(0),
+  INDEXER_BATCH_SIZE: z.coerce.number().int().positive().default(10),
+  INDEXER_POLL_MS: z.coerce.number().int().positive().default(15000),
+  INDEXER_CONFIRMATIONS: z.coerce.number().int().nonnegative().default(5),
 });
 
 export type Env = z.infer<typeof envSchema>;

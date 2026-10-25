@@ -5,7 +5,14 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Contract, JsonRpcProvider, keccak256, toUtf8Bytes } from 'ethers';
+import {
+  Contract,
+  JsonRpcProvider,
+  keccak256,
+  Log,
+  LogDescription,
+  toUtf8Bytes,
+} from 'ethers';
 import type { Env } from '../config/env';
 import abi from './abi/medicine-registry.abi.json';
 import {
@@ -17,6 +24,12 @@ import {
   toUnitStatusOnChain,
   UnitStatusOnChain,
 } from './types/chain.types';
+
+/** A raw log from the registry together with its decoded event. */
+export interface RegistryEvent {
+  log: Log;
+  event: LogDescription;
+}
 
 /**
  * Read-only access to MedicineRegistry. Every call here is a free view call:
@@ -113,6 +126,28 @@ export class ChainService implements OnModuleInit {
       proof,
     )) as RawUnitStatus;
     return toUnitStatusOnChain(raw);
+  }
+
+  async getHeadBlock(): Promise<number> {
+    return this.provider.getBlockNumber();
+  }
+
+  /** Every registry event in [fromBlock, toBlock], parsed, in chain order. */
+  async getRegistryEvents(fromBlock: number, toBlock: number) {
+    const registry = this.registry();
+    const logs = await this.provider.getLogs({
+      address: this.registryAddress,
+      fromBlock,
+      toBlock,
+    });
+    return logs
+      .map((log) => ({ log, event: registry.interface.parseLog(log) }))
+      .filter((e): e is RegistryEvent => e.event !== null);
+  }
+
+  async getBlockTime(blockNumber: number): Promise<Date> {
+    const block = await this.provider.getBlock(blockNumber);
+    return new Date(Number(block!.timestamp) * 1000);
   }
 
   /** How many units of a batch a party currently holds. */

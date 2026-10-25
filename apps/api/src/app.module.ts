@@ -7,6 +7,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { OrganizationModule } from './organization/organization.module';
 import { BatchesModule } from './batches/batches.module';
+import { CustodyModule } from './custody/custody.module';
+import { RecallsModule } from './recalls/recalls.module';
+import { IndexerModule } from './indexer/indexer.module';
+import { CloneDetectionModule } from './clone-detection/clone-detection.module';
 
 @Module({
   imports: [
@@ -21,6 +25,10 @@ import { BatchesModule } from './batches/batches.module';
     AuthModule,
     OrganizationModule,
     BatchesModule,
+    CustodyModule,
+    RecallsModule,
+    IndexerModule,
+    CloneDetectionModule,
   ],
 })
 export class AppModule {}
