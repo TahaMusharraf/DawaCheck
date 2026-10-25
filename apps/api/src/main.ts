@@ -4,9 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { corsOrigins, type Env } from './config/env';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const config = app.get(ConfigService<Env, true>);
 
   app.useGlobalPipes(
@@ -18,7 +19,9 @@ async function bootstrap() {
     origin: corsOrigins(config.get('CORS_ORIGINS', { infer: true })),
     credentials: true,
   });
-
+  
+  app.set('trust proxy', 1)
+  
   const docsConfig = new DocumentBuilder()
     .setTitle('DawaCheck API')
     .setDescription(

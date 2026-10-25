@@ -15,6 +15,7 @@ export const envSchema = z.object({
     .optional(),
   JWT_SECRET: z.string().min(32, 'must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('1d'),
+  SCAN_HASH_SALT: z.string().min(16, 'must be at least 16 characters'),
   REGULATOR_PRIVATE_KEY: z
   .string()
   .regex(/^0x[a-fA-F0-9]{64}$/, 'must be a 0x-prefixed 32-byte private key')

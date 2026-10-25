@@ -5,8 +5,10 @@ import { toBatchId, toUnitHash, buildBatchTree, generateCodes } from 'src/merkle
 import { ChainWriterService } from 'src/chain/chain-writer.service';
 import { ChainService } from 'src/chain/chain.service';
 import { AuthUser } from 'src/auth/types/auth-user';
-import { OrgType } from 'src/generated/prisma/browser';
+import { OrgType, ScanResult } from 'src/generated/prisma/enums';
 import { isHexString } from 'node_modules/ethers/lib.esm/utils/data';
+import { ScanContext } from '../clone-detection/types/scan';
+import { CloneDetectionService } from 'src/clone-detection/clone-detection.service';
 
 @Injectable()
 export class BatchesService {
@@ -14,7 +16,8 @@ export class BatchesService {
     constructor(
         private prismaService: PrismaService,
         private chainWriter: ChainWriterService,
-        private chainService: ChainService
+        private chainService: ChainService,
+        private cloneDetection: CloneDetectionService
     ) {}
 
     async createBatch(batchData: CreateBatchDto, manufacturerId: string) {
@@ -142,7 +145,7 @@ export class BatchesService {
         };
     }
 
-    async verifyUnit(batchId: string, code: string) {   
+    async verifyUnit(batchId: string, code: string, ctx: ScanContext) {   
         
         if (!isHexString(batchId, 32)) {
             return {
@@ -184,16 +187,27 @@ export class BatchesService {
 
         const status = await this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]);
     
-        const verdict =
-            !status.valid ? 'NOT_REGISTERED'
-            : status.recalled ? 'RECALLED'
-            : status.expired ? 'EXPIRED'
-            : 'AUTHENTIC';
+        const chainVerdict =
+            !status.valid ? ScanResult.NOT_REGISTERED
+            : status.recalled ? ScanResult.RECALLED
+            : status.expired ? ScanResult.EXPIRED
+            : ScanResult.AUTHENTIC;
+
+        const {verdict, risk} = await this.cloneDetection.recordScan(
+            {   
+                unitHash,
+                batchId,
+                soldAt: unit.soldAt,
+                expiryDate: unit.batch.expiryDate,
+            }, 
+            chainVerdict, 
+            ctx)
 
         return {
             message: 'Unit Verified From Chain',
             data: {
                 verdict: verdict,
+                risk: risk,
                 batch: {
                     batchId: unit.batch.batchId,
                     drugName: unit.batch.drugName,

@@ -10,6 +10,7 @@ import { BatchesModule } from './batches/batches.module';
 import { CustodyModule } from './custody/custody.module';
 import { RecallsModule } from './recalls/recalls.module';
 import { IndexerModule } from './indexer/indexer.module';
+import { CloneDetectionModule } from './clone-detection/clone-detection.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { IndexerModule } from './indexer/indexer.module';
     CustodyModule,
     RecallsModule,
     IndexerModule,
+    CloneDetectionModule,
   ],
 })
 export class AppModule {}

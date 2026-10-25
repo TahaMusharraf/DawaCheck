@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/batch.dto';
 import { OrgType } from 'src/generated/prisma/enums';
 import { CurrentUser, OrgTypes, Public } from 'src/auth/decorator/decorators';
 import type { AuthUser } from 'src/auth/types/auth-user';
+import type { Request } from 'express';
+import { ScanLocationDto } from './dto/scan-location.dto';
 
 @Controller('batches')
 export class BatchesController {
@@ -29,7 +31,17 @@ export class BatchesController {
 
   @Public()
   @Get('verify/:batchId/:code')
-  async verifyUnit(@Param('batchId') batchId: string, @Param('code') code: string) {
-    return this.batchesService.verifyUnit(batchId, code);
+  async verifyUnit(
+    @Param('batchId') batchId: string, 
+    @Param('code') code: string,
+    @Query() query: ScanLocationDto,
+    @Req() req: Request
+  ) {
+    const ctx = {
+      ip: req.ip ?? 'unknown',
+      deviceId: req.get('x-device-id') ?? req.get('user-agent') ?? 'unknown',
+      ...query
+    };    
+    return this.batchesService.verifyUnit(batchId, code, ctx);
   }
 }
