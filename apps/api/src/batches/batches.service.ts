@@ -12,6 +12,7 @@ import { CloneDetectionService } from 'src/clone-detection/clone-detection.servi
 import { ConfigService } from '@nestjs/config';
 import { Env } from 'src/config/env';
 import { QrService } from 'src/qr/qr.service';
+import { set } from 'zod';
 
 @Injectable()
 export class BatchesService {
@@ -172,6 +173,7 @@ export class BatchesService {
                     manufacturer: {
                         select: {
                             id: true,
+                            city: true,
                             name: true
                         }
                     }
@@ -190,8 +192,52 @@ export class BatchesService {
             }
         }
 
-        const status = await this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]);
-    
+        const [status, custody] = await Promise.all([
+            this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]),
+            this.prismaService.custodyEvent.findMany({
+                where: {
+                    batchId: batchId
+                },
+                orderBy: {
+                    occurredAt: 'desc'
+                },
+                select: {
+                    occurredAt: true,
+                    toOrg: {
+                        select: {
+                            name: true,
+                            type: true,
+                            city: true
+                        }
+                    }
+                }
+            })
+        ])
+        
+        const journey = [
+            {
+                step: 'MANUFACTURED',
+                org: unit.batch.manufacturer.name,
+                city: unit.batch.manufacturer.city,
+                at: unit.batch.mfgDate
+            },
+            ...custody.map((e) => ({
+                step: e.toOrg.type,
+                name: e.toOrg.name,
+                city: e.toOrg.city,
+                at: e.occurredAt,
+            })),
+            ... (
+                unit.soldAt ?
+                [{
+                    step: 'SOLD',
+                    org: null,
+                    city: null,
+                    at: unit.soldAt
+                }] : []
+            )
+        ] 
+
         const chainVerdict =
             !status.valid ? ScanResult.NOT_REGISTERED
             : status.recalled ? ScanResult.RECALLED
@@ -213,6 +259,7 @@ export class BatchesService {
             data: {
                 verdict: verdict,
                 risk: risk,
+                journey: journey,
                 batch: {
                     batchId: unit.batch.batchId,
                     drugName: unit.batch.drugName,
