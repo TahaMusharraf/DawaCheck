@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { createHmac } from "node:crypto";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
 import { AbiCoder, id, keccak256 } from "ethers";
 
@@ -17,9 +17,11 @@ export function toUnitHash(batchId: string, code: string): string {
   return keccak256(coder.encode(["bytes32", "string"], [batchId, code]));
 }
 
-/** Random secret codes to print on the packs, 16 hex chars each. */
-export function generateCodes(count: number): string[] {
-  return Array.from({ length: count }, () => randomBytes(8).toString("hex").toUpperCase());
+/** Random secret codes to print on the packs, 16 hex chars each. based on secret*/
+export function deriveCodes(secret: string, batchId: string, count: number): string[] {
+  return Array.from({ length: count }, (_, i) => 
+    createHmac("sha256", secret).update(`${batchId}:${i}`).digest("hex").slice(0, 16).toUpperCase(),
+  );
 }
 
 export function buildBatchTree(unitHashes: string[]) {

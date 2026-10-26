@@ -15,6 +15,7 @@ export const envSchema = z.object({
     .optional(),
   JWT_SECRET: z.string().min(32, 'must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('1d'),
+  CODE_SECRET: z.string().min(32, 'must be at least 32 characters'),
   SCAN_HASH_SALT: z.string().min(16, 'must be at least 16 characters'),
   REGULATOR_PRIVATE_KEY: z
   .string()
@@ -26,6 +27,7 @@ export const envSchema = z.object({
   INDEXER_BATCH_SIZE: z.coerce.number().int().positive().default(10),
   INDEXER_POLL_MS: z.coerce.number().int().positive().default(15000),
   INDEXER_CONFIRMATIONS: z.coerce.number().int().nonnegative().default(5),
+  VERIFY_BASE_URL: z.url().default('http://localhost:3000/v'),
 });
 
 export type Env = z.infer<typeof envSchema>;

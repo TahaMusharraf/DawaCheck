@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
+import { Body, Controller, Get, Head, Header, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/batch.dto';
 import { OrgType } from 'src/generated/prisma/enums';
@@ -6,6 +6,7 @@ import { CurrentUser, OrgTypes, Public } from 'src/auth/decorator/decorators';
 import type { AuthUser } from 'src/auth/types/auth-user';
 import type { Request } from 'express';
 import { ScanLocationDto } from './dto/scan-location.dto';
+import { ApiProduces } from '@nestjs/swagger';
 
 @Controller('batches')
 export class BatchesController {
@@ -43,5 +44,16 @@ export class BatchesController {
       ...query
     };    
     return this.batchesService.verifyUnit(batchId, code, ctx);
+  }
+
+  @OrgTypes(OrgType.MANUFACTURER)
+  @ApiProduces('application/pdf')
+  @Header('Content-Type', 'application/pdf')
+  @Get(':batchId/labels')
+  async getLabels(@Param('batchId') batchId: string, @CurrentUser() user: AuthUser) {
+    const pdf = await this.batchesService.getLabels(batchId, user.org.id) 
+    return new StreamableFile(pdf, {
+      disposition: `attachment; filename="labels-${batchId.slice(2, 10)}.pdf"`,
+    })
   }
 }
