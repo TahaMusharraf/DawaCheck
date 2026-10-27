@@ -12,6 +12,7 @@ import { RecallsModule } from './recalls/recalls.module';
 import { IndexerModule } from './indexer/indexer.module';
 import { CloneDetectionModule } from './clone-detection/clone-detection.module';
 import { QrModule } from './qr/qr.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { QrModule } from './qr/qr.module';
     IndexerModule,
     CloneDetectionModule,
     QrModule,
+    AlertsModule,
   ],
 })
 export class AppModule {}
