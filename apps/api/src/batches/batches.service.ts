@@ -199,7 +199,7 @@ export class BatchesService {
                     batchId: batchId
                 },
                 orderBy: {
-                    occurredAt: 'desc'
+                    occurredAt: 'asc'
                 },
                 select: {
                     occurredAt: true,
@@ -223,7 +223,7 @@ export class BatchesService {
             },
             ...custody.map((e) => ({
                 step: e.toOrg.type,
-                name: e.toOrg.name,
+                org: e.toOrg.name,
                 city: e.toOrg.city,
                 at: e.occurredAt,
             })),
