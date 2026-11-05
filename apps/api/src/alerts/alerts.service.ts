@@ -14,11 +14,11 @@ const NEXT: Record<AlertStatus, AlertStatus[]> = {
 export class AlertsService {
 
     constructor( 
-        private prismaSerivce: PrismaService
+        private prismaService: PrismaService
     ) {}
 
     async listAlerts(status?: AlertStatus) {
-        const alerts = await this.prismaSerivce.counterfeitAlert.findMany({
+        const alerts = await this.prismaService.counterfeitAlert.findMany({
             where: {
                 status: status
             },
@@ -41,13 +41,13 @@ export class AlertsService {
         })
     
         return {
-            message: "Alerts Fetched Successfuklly",
+            message: "Alerts Fetched Successfully",
             alerts: alerts
         };
     }
 
     async getAlert(id: string) {
-        const alert = await this.prismaSerivce.counterfeitAlert.findUnique({
+        const alert = await this.prismaService.counterfeitAlert.findUnique({
             where: {
                 id: id
             },
@@ -93,7 +93,7 @@ export class AlertsService {
     }
 
     async updateAlert(id: string, status: AlertStatus) {
-        const alert = await this.prismaSerivce.counterfeitAlert.findUnique({
+        const alert = await this.prismaService.counterfeitAlert.findUnique({
             where: {
                 id: id
             }
@@ -107,7 +107,7 @@ export class AlertsService {
 
         const closed = status === AlertStatus.CONFIRMED || status === AlertStatus.DISMISSED;
 
-        const updated = await this.prismaSerivce.counterfeitAlert.update({
+        const updated = await this.prismaService.counterfeitAlert.update({
             where: {
                 id: id
             },
