@@ -106,7 +106,7 @@ export class CloneDetectionService {
         await this.prismaService.scanEvent.create({
             data: {
                 unitHash: unit.unitHash,
-                result: chainVerdict,
+                result: verdict,
                 ipHash: this.hash(ctx.ip),
                 deviceHash: this.hash(ctx.deviceId),
                 city: ctx.city,
@@ -121,7 +121,9 @@ export class CloneDetectionService {
             const open = await this.prismaService.counterfeitAlert.findFirst({
                 where: {
                     unitHash: unit.unitHash,
-                    status: AlertStatus.OPEN
+                    status: {
+                        in: [AlertStatus.OPEN, AlertStatus.INVESTIGATING, AlertStatus.CONFIRMED]
+                    }
                 }
             });
             if(!open) {

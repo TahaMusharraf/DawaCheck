@@ -1,14 +1,18 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBatchDto } from './dto/batch.dto';
-import { toBatchId, toUnitHash, buildBatchTree, generateCodes } from 'src/merkle/merkle';
+import { toBatchId, toUnitHash, buildBatchTree, deriveCodes } from 'src/merkle/merkle';
 import { ChainWriterService } from 'src/chain/chain-writer.service';
 import { ChainService } from 'src/chain/chain.service';
 import { AuthUser } from 'src/auth/types/auth-user';
 import { OrgType, ScanResult } from 'src/generated/prisma/enums';
-import { isHexString } from 'node_modules/ethers/lib.esm/utils/data';
+import { isHexString } from 'ethers';                                    
 import { ScanContext } from '../clone-detection/types/scan';
 import { CloneDetectionService } from 'src/clone-detection/clone-detection.service';
+import { ConfigService } from '@nestjs/config';
+import { Env } from 'src/config/env';
+import { QrService } from 'src/qr/qr.service';
+import { set } from 'zod';
 
 @Injectable()
 export class BatchesService {
@@ -17,7 +21,9 @@ export class BatchesService {
         private prismaService: PrismaService,
         private chainWriter: ChainWriterService,
         private chainService: ChainService,
-        private cloneDetection: CloneDetectionService
+        private cloneDetection: CloneDetectionService,
+        private config: ConfigService<Env, true>,
+        private qrService: QrService
     ) {}
 
     async createBatch(batchData: CreateBatchDto, manufacturerId: string) {
@@ -47,7 +53,7 @@ export class BatchesService {
             throw new BadRequestException('Manufacturing date must be before expiry date');
         }
 
-        const codes = generateCodes(batchData.quantity);
+        const codes = deriveCodes(this.config.get('CODE_SECRET', { infer: true}), batchId, batchData.quantity);
         const unitHashes = codes.map(code => toUnitHash(batchId, code));
         const tree = buildBatchTree(unitHashes);
 
@@ -167,6 +173,7 @@ export class BatchesService {
                     manufacturer: {
                         select: {
                             id: true,
+                            city: true,
                             name: true
                         }
                     }
@@ -185,8 +192,52 @@ export class BatchesService {
             }
         }
 
-        const status = await this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]);
-    
+        const [status, custody] = await Promise.all([
+            this.chainService.verifyUnit(batchId, unitHash, unit.merkleProof as string[]),
+            this.prismaService.custodyEvent.findMany({
+                where: {
+                    batchId: batchId
+                },
+                orderBy: {
+                    occurredAt: 'desc'
+                },
+                select: {
+                    occurredAt: true,
+                    toOrg: {
+                        select: {
+                            name: true,
+                            type: true,
+                            city: true
+                        }
+                    }
+                }
+            })
+        ])
+        
+        const journey = [
+            {
+                step: 'MANUFACTURED',
+                org: unit.batch.manufacturer.name,
+                city: unit.batch.manufacturer.city,
+                at: unit.batch.mfgDate
+            },
+            ...custody.map((e) => ({
+                step: e.toOrg.type,
+                name: e.toOrg.name,
+                city: e.toOrg.city,
+                at: e.occurredAt,
+            })),
+            ... (
+                unit.soldAt ?
+                [{
+                    step: 'SOLD',
+                    org: null,
+                    city: null,
+                    at: unit.soldAt
+                }] : []
+            )
+        ] 
+
         const chainVerdict =
             !status.valid ? ScanResult.NOT_REGISTERED
             : status.recalled ? ScanResult.RECALLED
@@ -208,6 +259,7 @@ export class BatchesService {
             data: {
                 verdict: verdict,
                 risk: risk,
+                journey: journey,
                 batch: {
                     batchId: unit.batch.batchId,
                     drugName: unit.batch.drugName,
@@ -226,4 +278,27 @@ export class BatchesService {
         }
     }
     
+    async getLabels(batchId: string, manufacturerId: string): Promise<Buffer> {
+        const batch = await this.prismaService.batch.findUnique({
+            where: {
+                batchId: batchId
+            }
+        })
+
+        if (!batch) throw new NotFoundException("Batch Not Found");
+
+        if (batch.manufacturerId !== manufacturerId) throw new ForbiddenException("Only The Batch Manufacturer Can Print This");
+
+        const codes = deriveCodes(this.config.get('CODE_SECRET', { infer: true }), batchId, batch.quantity);
+
+        const firstUnit = await this.prismaService.unit.findUnique({
+            where: {
+                unitHash: toUnitHash(batchId, codes[0])
+            }
+        })
+
+        if (!firstUnit) throw new ConflictException("Labels For This Batch Cannot Be Regenerated");
+
+        return this.qrService.labelsPdf(batch, codes)
+    }
 }

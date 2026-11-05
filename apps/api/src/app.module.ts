@@ -11,6 +11,9 @@ import { CustodyModule } from './custody/custody.module';
 import { RecallsModule } from './recalls/recalls.module';
 import { IndexerModule } from './indexer/indexer.module';
 import { CloneDetectionModule } from './clone-detection/clone-detection.module';
+import { QrModule } from './qr/qr.module';
+import { AlertsModule } from './alerts/alerts.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -29,6 +32,9 @@ import { CloneDetectionModule } from './clone-detection/clone-detection.module';
     RecallsModule,
     IndexerModule,
     CloneDetectionModule,
+    QrModule,
+    AlertsModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule {}
