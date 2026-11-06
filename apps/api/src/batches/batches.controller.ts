@@ -48,11 +48,11 @@ export class BatchesController {
 
   @OrgTypes(OrgType.MANUFACTURER)
   @ApiProduces('application/pdf')
-  @Header('Content-Type', 'application/pdf')
   @Get(':batchId/labels')
   async getLabels(@Param('batchId') batchId: string, @CurrentUser() user: AuthUser) {
-    const pdf = await this.batchesService.getLabels(batchId, user.org.id) 
+    const pdf = await this.batchesService.getLabels(batchId, user.org.id)
     return new StreamableFile(pdf, {
+      type: 'application/pdf',
       disposition: `attachment; filename="labels-${batchId.slice(2, 10)}.pdf"`,
     })
   }
