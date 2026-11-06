@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Head, Header, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, StreamableFile } from '@nestjs/common';
 import { BatchesService } from './batches.service';
 import { CreateBatchDto } from './dto/batch.dto';
 import { OrgType } from 'src/generated/prisma/enums';
@@ -18,10 +18,10 @@ export class BatchesController {
     return this.batchesService.createBatch(batchData, user.org.id);
   }
 
-  @OrgTypes(OrgType.REGULATOR)
+  @OrgTypes(OrgType.REGULATOR, OrgType.MANUFACTURER)
   @Get('all')
-  async getAllBatches(){
-    return this.batchesService.getAllBatches();
+  async getAllBatches(@CurrentUser() user: AuthUser){
+    return this.batchesService.getAllBatches(user);
   }
 
   @OrgTypes(OrgType.REGULATOR, OrgType.MANUFACTURER, OrgType.DISTRIBUTOR, OrgType.PHARMACY)

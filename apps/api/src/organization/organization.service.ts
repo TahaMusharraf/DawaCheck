@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ListOrgsQueryDto } from './dto/organization.dto';
 import { OrgStatus, OrgType } from 'src/generated/prisma/browser';
 import { ChainWriterService } from 'src/chain/chain-writer.service';
+import type { AuthUser } from 'src/auth/types/auth-user';
 
 @Injectable()
 export class OrganizationService {
@@ -25,6 +26,35 @@ export class OrganizationService {
         return {
             message: 'Organizations fetched successfully',
             data: organization
+        };
+    }
+
+    /** Licensed orgs this org can hand custody to: manufacturer → distributor → pharmacy. */
+    async getPartners(user: AuthUser) {
+        const nextHop: Partial<Record<OrgType, OrgType>> = {
+            [OrgType.MANUFACTURER]: OrgType.DISTRIBUTOR,
+            [OrgType.DISTRIBUTOR]: OrgType.PHARMACY,
+        };
+
+        const partners = await this.prismaService.organization.findMany({
+            where: {
+                type: nextHop[user.org.type],
+                status: OrgStatus.LICENSED
+            },
+            select: {
+                id: true,
+                name: true,
+                type: true,
+                city: true
+            },
+            orderBy: {
+                name: 'asc'
+            }
+        });
+
+        return {
+            message: 'Partners fetched successfully',
+            data: partners
         };
     }
 
