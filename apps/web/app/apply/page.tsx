@@ -50,7 +50,7 @@ export default function ApplyPage() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell panel="apply">
       <h1 className="text-2xl font-semibold tracking-tight">Apply for a licence</h1>
       <p className="mt-1 text-sm text-muted-foreground">The regulator reviews every application before it can act on the chain.</p>
 
