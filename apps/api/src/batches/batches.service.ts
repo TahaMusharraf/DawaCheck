@@ -102,8 +102,10 @@ export class BatchesService {
          };
     }
 
-    async getAllBatches() {
+    // The regulator sees every batch; a manufacturer only its own.
+    async getAllBatches(user: AuthUser) {
         const batches = await this.prismaService.batch.findMany({
+            where: user.org.type === OrgType.MANUFACTURER ? { manufacturerId: user.org.id } : undefined,
             include: {
                 manufacturer: {
                     select: {
@@ -199,7 +201,7 @@ export class BatchesService {
                     batchId: batchId
                 },
                 orderBy: {
-                    occurredAt: 'desc'
+                    occurredAt: 'asc'
                 },
                 select: {
                     occurredAt: true,
@@ -223,7 +225,7 @@ export class BatchesService {
             },
             ...custody.map((e) => ({
                 step: e.toOrg.type,
-                name: e.toOrg.name,
+                org: e.toOrg.name,
                 city: e.toOrg.city,
                 at: e.occurredAt,
             })),

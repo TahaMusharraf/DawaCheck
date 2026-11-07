@@ -1,7 +1,8 @@
 import { Controller, Get, Param, Put, Query } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
-import { OrgTypes } from 'src/auth/decorator/decorators';
+import { CurrentUser, OrgTypes } from 'src/auth/decorator/decorators';
 import { ListOrgsQueryDto } from './dto/organization.dto';
+import type { AuthUser } from 'src/auth/types/auth-user';
 
 @OrgTypes('REGULATOR')
 @Controller('organization')
@@ -12,6 +13,13 @@ export class OrganizationController {
   @Get('getOrganization')
   async getOrganization(@Query() query: ListOrgsQueryDto) {
     return this.organizationService.getOrganization(query);
+  }
+
+  // Declared before ':orgId' so "partners" isn't read as an id.
+  @OrgTypes('MANUFACTURER', 'DISTRIBUTOR')
+  @Get('partners')
+  async getPartners(@CurrentUser() user: AuthUser) {
+    return this.organizationService.getPartners(user);
   }
 
   @Get(':orgId')
