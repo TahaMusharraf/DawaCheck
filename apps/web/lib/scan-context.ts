@@ -9,7 +9,10 @@ export function getDeviceId(): string {
     if (saved) return saved
 
     // randomUUID only exists on https/localhost; a phone on the LAN IP gets the fallback.
-    const id = crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+    // getRandomValues is available everywhere, unlike randomUUID.
+    const id =
+      crypto.randomUUID?.() ??
+      Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, '0')).join('')
     localStorage.setItem(DEVICE_KEY, id)
     return id
   } catch {

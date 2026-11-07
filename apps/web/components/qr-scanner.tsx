@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import { CameraOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+// Gives each mounted scanner its own element id.
+let mountCount = 0
+
 /**
  * Live camera QR reader. Calls onResult once per distinct code; set `paused`
  * while you handle a result so the same label isn't read again and again.
@@ -34,7 +37,7 @@ export function QrScanner({
     // A fresh element per mount: StrictMode mounts twice, and two scanners
     // sharing one element would wipe each other's video on cleanup.
     const el = document.createElement('div')
-    el.id = `qr-${Math.random().toString(36).slice(2)}`
+    el.id = `qr-scanner-${++mountCount}`
     el.className = 'size-full'
     container.appendChild(el)
 
@@ -61,6 +64,8 @@ export function QrScanner({
           )
         })
       stop = () => started.then(() => (scanner.isScanning ? scanner.stop() : undefined)).catch(() => {})
+    }).catch(() => {
+      if (!disposed) setError('The scanner could not be loaded. Check your connection, or paste the code below.')
     })
 
     return () => {
