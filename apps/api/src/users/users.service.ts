@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateUserDto } from './dto/user.dto';
 import * as argon2 from 'argon2';
@@ -12,12 +12,22 @@ export class UsersService {
     
     async getAllUsers() {
         const users = await this.prismaService.user.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
             select: {
                 id: true,
                 email: true,
-                orgId: true,
                 createdAt: true,
                 updatedAt: true,
+                organization: {
+                    select: {
+                        name: true,
+                        type: true,
+                        city: true,
+                        status: true
+                    }
+                }
             }
         });
         return {
@@ -40,6 +50,15 @@ export class UsersService {
 
         if (!verify) throw new BadRequestException('Password is incorrect');
 
+        if (dto.email && dto.email !== user.email) {
+            const taken = await this.prismaService.user.findUnique({
+                where: {
+                    email: dto.email
+                }
+            })
+            if (taken) throw new ConflictException('This email is already in use');
+        }
+
         let newPasswordHash;
         if (dto.newPassword) {
             newPasswordHash = await argon2.hash(dto.newPassword);
@@ -52,6 +71,11 @@ export class UsersService {
             data: {
                 email: dto.email,
                 passwordHash: newPasswordHash
+            },
+            select: {
+                id: true,
+                email: true,
+                updatedAt: true
             }
         })
         return {
