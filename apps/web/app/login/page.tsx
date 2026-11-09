@@ -7,6 +7,7 @@ import { LoaderCircle } from 'lucide-react'
 import { AuthShell } from '@/components/auth-shell'
 import { FormField } from '@/components/dashboard/ui'
 import { Button } from '@/components/ui/button'
+import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import { send } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -49,7 +50,7 @@ export default function LoginPage() {
           <Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@company.pk" />
         </FormField>
         <FormField label="Password" htmlFor="password">
-          <Input id="password" name="password" type="password" autoComplete="current-password" required />
+          <PasswordInput id="password" name="password" autoComplete="current-password" required />
         </FormField>
 
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">{error}</p>}

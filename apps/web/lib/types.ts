@@ -65,6 +65,15 @@ export type Organization = {
 
 export type Partner = Pick<Organization, 'id' | 'name' | 'type' | 'city'>;
 
+/** GET /users/all (regulator only) */
+export type AppUser = {
+    id: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+    organization: Pick<Organization, 'name' | 'type' | 'city' | 'status'>;
+};
+
 export type Batch = {
     batchId: string;
     batchNumber: string;

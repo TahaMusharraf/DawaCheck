@@ -10,6 +10,8 @@ type AuthState = {
   loading: boolean
   signIn: (token: string) => Promise<Me>
   signOut: () => void
+  /** Re-reads /auth/me, e.g. after the user changes their email. */
+  refresh: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -30,6 +32,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return user
   }, [])
 
+  const refresh = useCallback(async () => {
+    setMe(await api<Me>('/auth/me'))
+  }, [])
+
   // Restore the session once on load. A 401 means the token is stale, so drop it.
   useEffect(() => {
     if (!localStorage.getItem('token')) {
@@ -44,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
-  return <AuthContext.Provider value={{ me, loading, signIn, signOut }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ me, loading, signIn, signOut, refresh }}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
