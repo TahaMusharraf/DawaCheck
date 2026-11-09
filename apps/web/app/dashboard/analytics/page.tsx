@@ -35,7 +35,7 @@ function Analytics() {
 
   return (
     <>
-      <PageHeader title="Analytics" description="What patients and pharmacists are scanning, and where the problems are." />
+      <PageHeader title="Scan Radar" description="Every scan across the country: what is being checked, where, and where counterfeits surface." />
 
       {overview.error && !o ? (
         <Panel>

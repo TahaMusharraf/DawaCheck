@@ -7,6 +7,7 @@ import { Factory, LoaderCircle, Store, Truck } from 'lucide-react'
 import { AuthShell } from '@/components/auth-shell'
 import { FormField } from '@/components/dashboard/ui'
 import { Button } from '@/components/ui/button'
+import { PasswordInput } from '@/components/password-input'
 import { Input } from '@/components/ui/input'
 import { send } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -94,7 +95,7 @@ export default function ApplyPage() {
           <Input id="email" name="email" type="email" autoComplete="email" required />
         </FormField>
         <FormField label="Password" htmlFor="password" hint="8 to 32 characters.">
-          <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} maxLength={32} required />
+          <PasswordInput id="password" name="password" autoComplete="new-password" minLength={8} maxLength={32} required />
         </FormField>
 
         {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-red-600/20">{error}</p>}
