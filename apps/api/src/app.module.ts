@@ -14,6 +14,7 @@ import { CloneDetectionModule } from './clone-detection/clone-detection.module';
 import { QrModule } from './qr/qr.module';
 import { AlertsModule } from './alerts/alerts.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     QrModule,
     AlertsModule,
     AnalyticsModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
