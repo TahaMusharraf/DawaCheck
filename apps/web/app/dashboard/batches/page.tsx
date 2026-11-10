@@ -2,14 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Boxes, PackagePlus, Search } from 'lucide-react'
+import { Boxes, PackagePlus } from 'lucide-react'
 import { RoleGate } from '@/components/dashboard/role-gate'
-import { BatchRow } from '@/components/dashboard/rows'
-import { EmptyState, ListState, PageHeader, Panel } from '@/components/dashboard/ui'
+import { BatchListHead, BatchRow } from '@/components/dashboard/rows'
+import { EmptyState, ListState, PageHeader, Panel, SearchField, Segmented, Toolbar } from '@/components/dashboard/ui'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useAuth } from '@/lib/auth'
-import { cn } from '@/lib/utils'
 import { isExpired } from '@/lib/format'
 import { useApi } from '@/lib/use-api'
 import type { Batch } from '@/lib/types'
@@ -60,26 +58,10 @@ function Batches() {
       />
 
       <Panel>
-        <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-1 overflow-x-auto rounded-lg bg-muted p-1">
-            {FILTERS.map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  'rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all',
-                  filter === f ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
-          <div className="relative sm:w-72">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search drug or batch no." className="pl-9" />
-          </div>
-        </div>
+        <Toolbar>
+          <Segmented options={FILTERS} value={filter} onChange={setFilter} count={(f) => batches.data?.data.filter((b) => matches(b, f, '')).length} />
+          <SearchField value={q} onChange={setQ} placeholder="Search drug, batch or maker" />
+        </Toolbar>
 
         <ListState
           {...batches}
@@ -87,11 +69,14 @@ function Batches() {
           empty={<EmptyState Icon={Boxes} title="No batches found" description={q || filter !== 'All' ? 'Try a different search or filter.' : undefined} />}
         >
           {(list) => (
-            <ul className="divide-y">
-              {list.map((b) => (
-                <BatchRow key={b.batchId} batch={b} showManufacturer={regulator} />
-              ))}
-            </ul>
+            <>
+              <BatchListHead showManufacturer={regulator} />
+              <ul className="stagger divide-y divide-ink-900/[0.05]">
+                {list.map((b) => (
+                  <BatchRow key={b.batchId} batch={b} showManufacturer={regulator} />
+                ))}
+              </ul>
+            </>
           )}
         </ListState>
       </Panel>

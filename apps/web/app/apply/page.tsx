@@ -55,7 +55,7 @@ export default function ApplyPage() {
       <h1 className="text-2xl font-semibold tracking-tight">Apply for a licence</h1>
       <p className="mt-1 text-sm text-muted-foreground">The regulator reviews every application before it can act on the chain.</p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <form onSubmit={onSubmit} className="mt-8 space-y-4 short:mt-5 short:space-y-3">
         <div className="space-y-1.5">
           <span className="text-sm font-medium">Organisation type</span>
           <div className="grid grid-cols-3 gap-2" role="radiogroup">
@@ -69,8 +69,8 @@ export default function ApplyPage() {
                 className={cn(
                   'flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-xs font-medium ring-1 transition-all',
                   orgType === value
-                    ? 'bg-foreground text-background ring-foreground shadow-sm'
-                    : 'bg-card text-muted-foreground ring-foreground/10 hover:text-foreground hover:ring-foreground/25',
+                    ? 'bg-brand-800 text-mint ring-brand-800 shadow-md shadow-brand-900/20'
+                    : 'bg-card text-muted-foreground ring-ink-900/10 hover:bg-brand-50 hover:text-brand-800 hover:ring-brand-400/50',
                 )}
               >
                 <Icon className="size-5" />
@@ -106,7 +106,7 @@ export default function ApplyPage() {
         </Button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-muted-foreground">
+      <p className="mt-8 text-center text-sm text-muted-foreground short:mt-5">
         Already licensed?{' '}
         <Link href="/login" className="font-medium text-foreground underline-offset-4 hover:underline">
           Sign in

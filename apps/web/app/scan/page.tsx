@@ -48,8 +48,8 @@ export default function ScanPage() {
 
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-16">
           <div className="mb-6 animate-rise lg:mb-0">
-            <p className="text-xs font-semibold tracking-[0.18em] text-sky-700 uppercase">Verify a medicine</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight text-balance lg:text-5xl">
+            <p className="text-xs font-semibold tracking-[0.18em] text-brand-700 uppercase">Verify a medicine</p>
+            <h1 className="mt-3 font-display text-[2.6rem] leading-[1.02] text-brand-950 lg:text-6xl">
               Point your camera at the QR on the pack.
             </h1>
             <p className="mt-3 text-muted-foreground lg:text-lg">
@@ -60,7 +60,7 @@ export default function ScanPage() {
               {['Hold the pack steady inside the frame', 'Allow location if asked: it helps catch copied labels', 'Read the verdict and the pack’s journey'].map(
                 (t, i) => (
                   <li key={t} className="flex items-center gap-3">
-                    <span className="grid size-6 place-items-center rounded-full bg-foreground text-xs font-semibold text-background">{i + 1}</span>
+                    <span className="grid size-6 place-items-center rounded-full bg-brand-800 text-xs font-semibold text-mint">{i + 1}</span>
                     {t}
                   </li>
                 ),
@@ -69,14 +69,14 @@ export default function ScanPage() {
           </div>
 
           <div className="space-y-4 animate-rise" style={{ animationDelay: '120ms' }}>
-            <div className="rounded-3xl bg-card/80 p-3 shadow-lg ring-1 ring-foreground/10 backdrop-blur">
+            <div className="rounded-3xl bg-card/80 p-3 shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md">
               <QrScanner onResult={open} paused={found} />
               <p className="py-3 text-center text-sm text-muted-foreground">
                 {found ? 'Code found, opening…' : 'Looking for a QR code…'}
               </p>
             </div>
 
-            <form onSubmit={onManual} className="rounded-2xl bg-card/80 p-4 ring-1 ring-foreground/10 backdrop-blur">
+            <form onSubmit={onManual} className="rounded-2xl bg-card/85 p-4 shadow-panel ring-1 ring-ink-900/[0.06] backdrop-blur-md">
               <label htmlFor="code" className="flex items-center gap-2 text-sm font-medium">
                 <Keyboard className="size-4 text-muted-foreground" />
                 No camera? Paste the link or code

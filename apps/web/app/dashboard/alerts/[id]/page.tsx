@@ -6,7 +6,8 @@ import { useState } from 'react'
 import { ArrowLeft, CircleX, LoaderCircle, MapPin, Search, ShieldX, Siren } from 'lucide-react'
 import { toast } from 'sonner'
 import { RoleGate } from '@/components/dashboard/role-gate'
-import { ErrorState, Panel } from '@/components/dashboard/ui'
+import { ErrorState, IconTile, Panel, RiskMeter } from '@/components/dashboard/ui'
+import { RuleChips } from '@/components/dashboard/rule-chips'
 import { AlertStatusBadge, Pill } from '@/components/status-badge'
 import { VERDICT_UI } from '@/components/verify/verdict-config'
 import { Button } from '@/components/ui/button'
@@ -80,17 +81,18 @@ function AlertDetailView() {
         <>
           <div className="mb-6 flex flex-col gap-4 animate-rise lg:mb-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex items-center gap-4">
-              <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-700 ring-1 ring-red-600/20">
-                <Siren className="size-6" />
-              </span>
-              <div>
+              <IconTile Icon={Siren} tone="red" size="lg" />
+              <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-semibold tracking-tight lg:text-3xl">{humanize(a.ruleTriggered)}</h1>
+                  <h1 className="text-2xl font-semibold tracking-tight text-brand-950 lg:text-[2rem]">{a.batch.drugName}</h1>
                   <AlertStatusBadge status={a.status} />
                 </div>
-                <p className="text-muted-foreground">
-                  {a.batch.drugName} · {a.batch.batchNumber} · {a.batch.manufacturer.name}
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Batch <span className="font-mono">{a.batch.batchNumber}</span> by {a.batch.manufacturer.name}
                 </p>
+                <div className="mt-2">
+                  <RuleChips rules={a.ruleTriggered} />
+                </div>
               </div>
             </div>
             {NEXT[a.status].length > 0 && (
@@ -110,8 +112,8 @@ function AlertDetailView() {
 
           <div className="grid gap-6 lg:grid-cols-[20rem_1fr]">
             <Panel title="Summary" className="h-fit" delay={80}>
-              <dl className="divide-y text-sm">
-                <Row label="Risk score" value={<span className="text-lg font-semibold text-red-700 tabular-nums">{a.severity}</span>} />
+              <dl className="divide-y divide-ink-900/[0.05] text-sm">
+                <Row label="Risk score" value={<RiskMeter value={a.severity} />} />
                 <Row label="City" value={a.city ?? 'Unknown'} />
                 <Row label="Raised" value={formatDateTime(a.createdAt)} />
                 <Row label="Closed" value={formatDateTime(a.resolvedAt)} />
@@ -122,7 +124,7 @@ function AlertDetailView() {
 
             <Panel title="Scan history" description="Every scan of this one pack, oldest first." delay={160}>
               <ol className="relative px-5 py-5">
-                <span aria-hidden className="absolute top-8 bottom-8 left-[2.15rem] w-px bg-foreground/10" />
+                <span aria-hidden className="absolute top-8 bottom-8 left-[2.15rem] w-px origin-top bg-gradient-to-b from-ink-200 via-ink-200 to-transparent animate-grow-y" />
                 {a.unit.scans.map((s, i) => {
                   const ui = VERDICT_UI[s.result]
                   return (
@@ -165,7 +167,7 @@ function AlertDetailView() {
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-3">
+    <div className="flex items-center justify-between gap-4 px-5 py-3 transition-colors hover:bg-ink-50/60">
       <dt className="text-muted-foreground">{label}</dt>
       <dd className="text-right font-medium">{value}</dd>
     </div>

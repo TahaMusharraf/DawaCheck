@@ -85,15 +85,15 @@ function NewBatch() {
           </form>
         </Panel>
 
-        <Panel className="h-fit bg-slate-950 text-slate-100 ring-slate-800" delay={120}>
+        <Panel className="h-fit bg-ink-950 text-ink-100 ring-ink-800" delay={120}>
           <div className="p-5">
-            <Blocks className="size-5 text-sky-300" />
+            <Blocks className="size-5 text-brand-300" />
             <p className="mt-3 font-semibold">What happens on submit</p>
-            <ol className="mt-3 space-y-2.5 text-sm text-slate-300">
+            <ol className="mt-3 space-y-2.5 text-sm text-ink-300">
               {['A secret code is generated for every pack', 'Each code is hashed and built into a Merkle tree', 'Only the 32-byte root is sent on-chain, in one transaction', 'You download a PDF of QR labels to print'].map(
                 (t, i) => (
                   <li key={t} className="flex gap-2.5">
-                    <span className="font-mono text-sky-300">{i + 1}.</span>
+                    <span className="font-mono text-brand-300">{i + 1}.</span>
                     {t}
                   </li>
                 ),
@@ -124,7 +124,7 @@ function Success({ created, onAnother }: { created: Created; onAnother: () => vo
   return (
     <div className="mx-auto max-w-xl">
       <Panel className="p-8 text-center">
-        <span className="mx-auto grid size-16 place-items-center rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 animate-pop">
+        <span className="mx-auto grid size-16 place-items-center rounded-full bg-brand-50 text-brand-700 ring-1 ring-brand-600/20 animate-pop">
           <CircleCheck className="size-8" strokeWidth={1.75} />
         </span>
         <h1 className="mt-5 text-2xl font-semibold tracking-tight">Batch registered</h1>
@@ -132,7 +132,7 @@ function Success({ created, onAnother }: { created: Created; onAnother: () => vo
           {batch.drugName} {batch.dosage} · {batch.batchNumber} · {batch.quantity.toLocaleString()} packs
         </p>
         {batch.txHash && (
-          <a href={txUrl(batch.txHash)} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm text-sky-700 underline-offset-4 hover:underline">
+          <a href={txUrl(batch.txHash)} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm text-brand-700 underline-offset-4 hover:underline">
             View the transaction on Polygonscan
           </a>
         )}

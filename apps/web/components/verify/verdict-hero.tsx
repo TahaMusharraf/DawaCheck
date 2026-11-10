@@ -7,7 +7,7 @@ export function VerdictHero({ verdict, risk }: { verdict: Verdict; risk?: ScanRi
   const { eyebrow, title, desc, advice, Icon, tone } = VERDICT_UI[verdict]
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-card/80 p-6 text-center shadow-sm ring-1 ring-foreground/10 backdrop-blur animate-rise lg:p-10">
+    <section className="relative overflow-hidden rounded-2xl bg-card/85 p-6 text-center shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md animate-rise lg:p-10">
       <div className="relative mx-auto grid size-20 place-items-center lg:size-24">
         <span className={cn('absolute inset-0 rounded-full animate-pulse-ring', tone.solid)} />
         <span
@@ -20,7 +20,7 @@ export function VerdictHero({ verdict, risk }: { verdict: Verdict; risk?: ScanRi
       </div>
 
       <p className={cn('mt-6 text-xs font-semibold uppercase tracking-[0.18em] lg:mt-8', tone.text)}>{eyebrow}</p>
-      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-balance lg:text-3xl">{title}</h1>
+      <h1 className="mt-2 font-display text-[2.4rem] leading-[1.05] text-brand-950 lg:text-5xl">{title}</h1>
       <p className="mx-auto mt-2 max-w-xs text-sm text-muted-foreground text-balance lg:max-w-sm lg:text-base">{desc}</p>
 
       {advice && (

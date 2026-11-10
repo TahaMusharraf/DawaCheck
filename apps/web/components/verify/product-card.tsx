@@ -10,11 +10,11 @@ export function ProductCard({ batch, manufacturer }: { batch: NonNullable<Data['
 
   return (
     <section
-      className="rounded-2xl bg-card/80 p-5 shadow-sm ring-1 ring-foreground/10 backdrop-blur animate-rise"
+      className="rounded-2xl bg-card/85 p-5 shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md animate-rise"
       style={{ animationDelay: '120ms' }}
     >
       <div className="flex items-center gap-3">
-        <span className="grid size-11 place-items-center rounded-xl bg-sky-50 text-sky-700 ring-1 ring-sky-600/15">
+        <span className="grid size-11 place-items-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-brand-600/15">
           <Pill className="size-5" />
         </span>
         <div className="min-w-0">

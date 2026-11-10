@@ -77,7 +77,7 @@ export function QrScanner({
   return (
     <div
       className={cn(
-        'relative aspect-square w-full overflow-hidden rounded-2xl bg-slate-950',
+        'relative aspect-square w-full overflow-hidden rounded-2xl bg-ink-950',
         '[&_video]:size-full! [&_video]:object-cover [&_#qr-shaded-region]:hidden!',
         className,
       )}
@@ -91,14 +91,14 @@ export function QrScanner({
         <span className="absolute bottom-0 left-0 size-8 rounded-bl-xl border-b-4 border-l-4 border-white" />
         <span className="absolute right-0 bottom-0 size-8 rounded-br-xl border-r-4 border-b-4 border-white" />
         {!error && !paused && (
-          <span className="absolute inset-x-3 top-2 h-0.5 rounded-full bg-sky-400 shadow-[0_0_14px_3px] shadow-sky-400/70 animate-scan-tall" />
+          <span className="absolute inset-x-3 top-2 h-0.5 rounded-full bg-brand-400 shadow-[0_0_14px_3px] shadow-brand-400/70 animate-scan-tall" />
         )}
       </div>
 
       {error && (
-        <div className="absolute inset-0 grid place-items-center bg-slate-950/90 p-6 text-center text-sm text-slate-200">
+        <div className="absolute inset-0 grid place-items-center bg-ink-950/90 p-6 text-center text-sm text-ink-200">
           <div>
-            <CameraOff className="mx-auto mb-3 size-8 text-slate-400" />
+            <CameraOff className="mx-auto mb-3 size-8 text-ink-400" />
             {error}
           </div>
         </div>
