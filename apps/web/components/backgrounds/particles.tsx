@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { runFrameLoop } from './frame-loop'
 
 type Dot = { x: number; y: number; z: number; phase: number; sway: number }
 
@@ -72,12 +73,8 @@ export function Particles({
     }
     window.addEventListener('pointermove', onMove, { passive: true })
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    let frame = 0
-    let visible = true
     let last = performance.now()
-
-    const draw = (now: number) => {
+    const stop = runFrameLoop(canvas, (now, reduced) => {
       const dt = Math.min((now - last) / 16.67, 3)
       last = now
       pointer.sx += (pointer.x - pointer.sx) * 0.04
@@ -99,39 +96,12 @@ export function Particles({
         ctx.drawImage(sprite, x - size / 2, y - size / 2, size, size)
       }
       ctx.globalAlpha = 1
-    }
-
-    const loop = (now: number) => {
-      draw(now)
-      if (visible && !document.hidden) frame = requestAnimationFrame(loop)
-    }
-    const start = () => {
-      cancelAnimationFrame(frame)
-      last = performance.now()
-      frame = requestAnimationFrame(loop)
-    }
-    if (reduced) {
-      draw(performance.now())
-    } else {
-      start()
-    }
-
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-      if (visible && !reduced) start()
     })
-    io.observe(canvas)
-    const onVisibility = () => {
-      if (!document.hidden && visible && !reduced) start()
-    }
-    document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
-      cancelAnimationFrame(frame)
+      stop()
       ro.disconnect()
-      io.disconnect()
       window.removeEventListener('pointermove', onMove)
-      document.removeEventListener('visibilitychange', onVisibility)
     }
   }, [color, density])
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { runFrameLoop } from './frame-loop'
 
 // Adapted from the idea behind React Bits' Aurora / Soft Aurora backgrounds: a full-screen
 // fragment shader of domain-warped simplex noise, with a soft ribbon of light drifting across
@@ -87,8 +88,7 @@ export type AuroraColors = [string, string, string, string]
 /**
  * Slow, organic flowing gradient. `colors` are [base, body, highlight, ribbon]; changing them
  * eases the shader to the new palette instead of snapping. Renders at half resolution (the
- * image is soft anyway), pauses when off-screen or in a background tab, and draws a single
- * still frame for people who prefer reduced motion.
+ * image is soft anyway); see runFrameLoop for pausing and reduced motion.
  */
 export function Aurora({
   colors,
@@ -152,16 +152,13 @@ export function Aurora({
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     // A random start so two backgrounds on screen don't move in lockstep.
-    const offset = Math.random() * 200
-    let frame = 0
-    let visible = true
+    let time = Math.random() * 200
     let last = performance.now()
-    let time = offset
 
-    const draw = (now: number) => {
-      time += ((now - last) / 1000) * speed
+    const stop = runFrameLoop(canvas, (now) => {
+      // Capped so a background tab coming back doesn't jump the animation forward.
+      time += (Math.min(now - last, 50) / 1000) * speed
       last = now
       for (let i = 0; i < 4; i++) {
         for (let c = 0; c < 3; c++) current[i][c] += (target.current[i][c] - current[i][c]) * 0.04
@@ -172,39 +169,11 @@ export function Aurora({
       gl.uniform1f(uAlpha, opacity)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
       canvas.dataset.ready = 'true'
-    }
-
-    const loop = (now: number) => {
-      draw(now)
-      if (visible && !document.hidden) frame = requestAnimationFrame(loop)
-    }
-    const start = () => {
-      cancelAnimationFrame(frame)
-      last = performance.now()
-      frame = requestAnimationFrame(loop)
-    }
-
-    if (reduced) {
-      draw(performance.now())
-    } else {
-      start()
-    }
-
-    const io = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting
-      if (visible && !reduced) start()
     })
-    io.observe(canvas)
-    const onVisibility = () => {
-      if (!document.hidden && visible && !reduced) start()
-    }
-    document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
-      cancelAnimationFrame(frame)
+      stop()
       ro.disconnect()
-      io.disconnect()
-      document.removeEventListener('visibilitychange', onVisibility)
       gl.getExtension('WEBGL_lose_context')?.loseContext()
     }
   }, [opacity, speed])
