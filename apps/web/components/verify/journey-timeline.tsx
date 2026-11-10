@@ -6,7 +6,7 @@ import { FALLBACK_STEP, STEP_UI } from './verdict-config'
 export function JourneyTimeline({ steps }: { steps: JourneyStep[] }) {
   return (
     <section
-      className="rounded-2xl bg-card/80 p-5 shadow-sm ring-1 ring-foreground/10 backdrop-blur animate-rise"
+      className="rounded-2xl bg-card/85 p-5 shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md animate-rise"
       style={{ animationDelay: '240ms' }}
     >
       <h2 className="font-semibold tracking-tight">Supply chain journey</h2>
@@ -16,7 +16,7 @@ export function JourneyTimeline({ steps }: { steps: JourneyStep[] }) {
         {/* The rail draws itself downward behind the icons. */}
         <span
           aria-hidden
-          className="absolute top-5 bottom-5 left-5 w-px origin-top bg-gradient-to-b from-sky-500/60 to-foreground/10 animate-grow-y"
+          className="absolute top-5 bottom-5 left-5 w-px origin-top bg-gradient-to-b from-brand-500/60 to-foreground/10 animate-grow-y"
           style={{ animationDelay: '400ms' }}
         />
 
@@ -32,8 +32,8 @@ export function JourneyTimeline({ steps }: { steps: JourneyStep[] }) {
               <span
                 className={
                   last
-                    ? 'relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-sky-600 text-white shadow-sm ring-4 ring-sky-100'
-                    : 'relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-card text-sky-700 ring-1 ring-foreground/10'
+                    ? 'relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-brand-600 text-white shadow-sm ring-4 ring-brand-100'
+                    : 'relative z-10 grid size-10 shrink-0 place-items-center rounded-full bg-card text-brand-700 ring-1 ring-foreground/10'
                 }
               >
                 <Icon className="size-[18px]" />

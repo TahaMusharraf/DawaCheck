@@ -23,8 +23,8 @@ import { PhoneDemo } from '@/components/landing/phone-demo'
 import { Reveal } from '@/components/landing/reveal'
 import { WordCycle } from '@/components/landing/word-cycle'
 import { Button } from '@/components/ui/button'
-import { Backdrop } from '@/components/verify/backdrop'
-import { TONES, VERDICT_UI } from '@/components/verify/verdict-config'
+import { AmbientBackground } from '@/components/backgrounds/ambient'
+import { VERDICT_UI } from '@/components/verify/verdict-config'
 import { cn } from '@/lib/utils'
 import type { Verdict } from '@/lib/types'
 
@@ -82,11 +82,11 @@ const FAQ = [
 export default function Home() {
   return (
     <div className="relative isolate overflow-x-clip">
-      <Backdrop tone={TONES.neutral} />
-
-      <header className="sticky top-0 z-40 border-b border-transparent bg-background/70 backdrop-blur-md">
+      {/* Sits behind every light section; fixed, so it only ever paints one screen. */}
+      <AmbientBackground fixed />
+      <header className="sticky top-0 z-40 border-b border-mint/10 bg-brand-950/75 text-white backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-8">
-          <Brand />
+          <Brand dark />
           <nav className="flex items-center gap-1 sm:gap-2">
             <div className="hidden items-center gap-1 md:flex">
               {[
@@ -94,15 +94,15 @@ export default function Home() {
                 ['Who it’s for', '#who'],
                 ['FAQ', '#faq'],
               ].map(([label, href]) => (
-                <Button key={href} variant="ghost" size="sm" asChild>
+                <Button key={href} variant="ghost" size="sm" className="text-brand-100/80 hover:bg-white/10 hover:text-white" asChild>
                   <a href={href}>{label}</a>
                 </Button>
               ))}
             </div>
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" className="text-brand-100/80 hover:bg-white/10 hover:text-white" asChild>
               <Link href="/login">Sign in</Link>
             </Button>
-            <Button size="sm" asChild>
+            <Button size="sm" className="bg-mint text-brand-900 shadow-[0_0_24px_-6px_rgb(205_255_220/0.6)] hover:bg-white" asChild>
               <Link href="/scan">
                 <ScanLine />
                 Scan a pack
@@ -113,42 +113,45 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pt-12 pb-16 sm:px-8 lg:grid-cols-[1.15fr_1fr] lg:pt-20 lg:pb-24">
+      <section className="relative isolate -mt-16 overflow-hidden pt-16 text-white">
+        <AmbientBackground variant="dark" />
+        <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-brand-950/60" />
+      <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 pt-14 pb-20 sm:px-8 lg:grid-cols-[1.15fr_1fr] lg:pt-24 lg:pb-28">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-foreground/10 backdrop-blur animate-rise">
+          <p className="inline-flex items-center gap-2 rounded-full bg-mint/[0.06] px-3 py-1 text-xs font-medium text-brand-100/85 ring-1 ring-mint/15 backdrop-blur animate-rise">
             <span className="relative flex size-2">
-              <span className="absolute inset-0 rounded-full bg-emerald-500 animate-pulse-ring" />
-              <span className="relative size-2 rounded-full bg-emerald-500" />
+              <span className="absolute inset-0 rounded-full bg-mint animate-pulse-ring" />
+              <span className="relative size-2 rounded-full bg-mint" />
             </span>
             Live on the Polygon blockchain
           </p>
-          <h1 className="mt-6 text-[2.6rem] leading-[1.05] font-semibold tracking-tight sm:text-6xl animate-rise" style={{ animationDelay: '80ms' }}>
+          <h1 className="mt-7 font-display text-[3.2rem] leading-[0.98] tracking-tight sm:text-7xl lg:text-[5.2rem] animate-rise" style={{ animationDelay: '80ms' }}>
             Know your medicine is{' '}
-            <WordCycle words={['genuine.', 'not expired.', 'not recalled.', 'not a copy.']} className="text-sky-700" />
+            <WordCycle words={['genuine.', 'not expired.', 'not recalled.', 'not a copy.']} className="text-mint italic" />
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground animate-rise" style={{ animationDelay: '160ms' }}>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-brand-100/75 animate-rise" style={{ animationDelay: '160ms' }}>
             DawaCheck gives every medicine pack an identity that can&apos;t be forged or edited. Point your camera at the QR
             code and in about two seconds you&apos;ll see who made it, where it has been, and whether it is safe to use.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row animate-rise" style={{ animationDelay: '240ms' }}>
-            <Button size="lg" className="group h-12 px-6 text-base shadow-lg shadow-slate-900/10" asChild>
+            <Button size="lg" className="group h-12 bg-mint px-6 text-base text-brand-900 shadow-[0_0_40px_-8px_rgb(205_255_220/0.55)] hover:bg-white" asChild>
               <Link href="/scan">
                 <ScanLine />
                 Check a medicine now
                 <ArrowRight className="transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="h-12 bg-card/60 px-6 text-base backdrop-blur" asChild>
+            <Button size="lg" variant="outline" className="h-12 border-mint/20 bg-white/[0.04] px-6 text-base text-white backdrop-blur hover:border-mint/40 hover:bg-white/10 hover:text-white" asChild>
               <Link href="/apply">
                 <Building2 />
                 I&apos;m an organisation
               </Link>
             </Button>
           </div>
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground animate-rise" style={{ animationDelay: '320ms' }}>
+          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-100/70 animate-rise" style={{ animationDelay: '320ms' }}>
             {['No app to install', 'No account needed', 'Always free for patients'].map((t) => (
               <li key={t} className="flex items-center gap-1.5">
-                <Check className="size-4 text-emerald-600" strokeWidth={2.5} />
+                <Check className="size-4 text-brand-300" strokeWidth={2.5} />
                 {t}
               </li>
             ))}
@@ -158,14 +161,15 @@ export default function Home() {
         <div className="animate-rise" style={{ animationDelay: '200ms' }}>
           <PhoneDemo />
         </div>
+      </div>
       </section>
 
       {/* Ticker */}
-      <div className="relative border-y bg-card/50 py-4 backdrop-blur [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      <div className="relative border-b bg-card/70 py-4 backdrop-blur [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <div className="flex w-max animate-marquee gap-10 hover:[animation-play-state:paused]">
           {[...TICKER, ...TICKER].map((t, i) => (
             <span key={i} className="flex items-center gap-3 text-sm font-medium whitespace-nowrap text-muted-foreground">
-              <Blocks className="size-4 text-sky-600" />
+              <Blocks className="size-4 text-brand-600" />
               {t}
             </span>
           ))}
@@ -174,15 +178,15 @@ export default function Home() {
 
       {/* Numbers */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-8">
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-foreground/10 ring-1 ring-foreground/10 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-ink-900/[0.07] shadow-panel ring-1 ring-ink-900/[0.06] lg:grid-cols-4">
           {[
             { n: <CountUp to={10} prefix="1 in " />, l: 'medical products in low- and middle-income countries is substandard or falsified (WHO)' },
             { n: <CountUp to={2} prefix="~" suffix="s" duration={900} />, l: 'from pointing your camera to a verdict' },
             { n: <CountUp to={5000} />, l: 'packs registered in a single blockchain transaction' },
             { n: <CountUp to={0} />, l: 'names or patient records ever written to the chain' },
           ].map(({ n, l }, i) => (
-            <Reveal key={l} delay={i * 90} className="bg-card p-6 sm:p-8">
-              <p className="text-3xl font-semibold tracking-tight sm:text-4xl">{n}</p>
+            <Reveal key={l} delay={i * 90} className="group relative bg-card p-6 transition-colors hover:bg-brand-50/50 sm:p-8">
+              <p className="font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">{n}</p>
               <p className="mt-2 text-sm text-muted-foreground">{l}</p>
             </Reveal>
           ))}
@@ -193,7 +197,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-8">
         <Reveal>
           <Eyebrow>The problem</Eyebrow>
-          <h2 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+          <h2 className="mt-2 max-w-3xl font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">
             Holograms get copied. Databases get edited. Recalls arrive too late.
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">
@@ -202,7 +206,7 @@ export default function Home() {
         </Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           {PROBLEMS.map(({ Icon, was, why, fix }, i) => (
-            <Reveal key={was} delay={i * 90} className="group rounded-2xl bg-card p-6 ring-1 ring-foreground/10 transition-shadow hover:shadow-lg">
+            <Reveal key={was} delay={i * 90} className="group rounded-2xl bg-card p-6 shadow-panel ring-1 ring-ink-900/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
               <div className="flex items-center gap-3">
                 <span className="grid size-10 place-items-center rounded-xl bg-red-50 text-red-700 ring-1 ring-red-600/15">
                   <Icon className="size-5" />
@@ -211,7 +215,7 @@ export default function Home() {
               </div>
               <p className="mt-4 text-sm text-muted-foreground">{why}</p>
               <p className="mt-4 flex gap-2 border-t pt-4 text-sm font-medium">
-                <Check className="mt-0.5 size-4 shrink-0 text-emerald-600" strokeWidth={2.5} />
+                <Check className="mt-0.5 size-4 shrink-0 text-brand-600" strokeWidth={2.5} />
                 {fix}
               </p>
             </Reveal>
@@ -220,20 +224,20 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="scroll-mt-16 border-y bg-card/60 backdrop-blur">
+      <section id="how" className="relative scroll-mt-16 border-y bg-gradient-to-b from-brand-50/60 to-card/60 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-8">
           <Reveal>
             <Eyebrow>How it works</Eyebrow>
-            <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+            <h2 className="mt-2 max-w-2xl font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">
               From the factory floor to the pharmacy counter, every step leaves a public record.
             </h2>
           </Reveal>
           <ol className="relative mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <span aria-hidden className="absolute top-[2.85rem] right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-sky-500/0 via-sky-500/50 to-sky-500/0 lg:block" />
+            <span aria-hidden className="absolute top-[2.85rem] right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-brand-500/0 via-brand-500/50 to-brand-500/0 lg:block" />
             {STEPS.map(({ Icon, title, text }, i) => (
-              <Reveal as="li" key={title} delay={i * 120} className="group relative rounded-2xl bg-background p-6 ring-1 ring-foreground/10 transition-all hover:-translate-y-1 hover:shadow-lg">
+              <Reveal as="li" key={title} delay={i * 120} className="group relative rounded-2xl bg-background p-6 ring-1 ring-ink-900/[0.06] transition-all duration-300 hover:-translate-y-1 hover:bg-card hover:shadow-lift">
                 <span className="absolute top-6 right-6 font-mono text-xs text-muted-foreground">0{i + 1}</span>
-                <span className="relative grid size-11 place-items-center rounded-xl bg-sky-600 text-white shadow-md shadow-sky-600/20">
+                <span className="relative grid size-11 place-items-center rounded-xl bg-brand-600 text-mint shadow-md shadow-brand-600/25 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
                   <Icon className="size-5" />
                 </span>
                 <h3 className="mt-5 font-semibold">{title}</h3>
@@ -248,12 +252,12 @@ export default function Home() {
       <section id="who" className="mx-auto max-w-6xl scroll-mt-16 px-4 py-20 sm:px-8">
         <Reveal>
           <Eyebrow>Who it&apos;s for</Eyebrow>
-          <h2 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl">One record, trusted by people who don&apos;t trust each other.</h2>
+          <h2 className="mt-2 max-w-2xl font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">One record, trusted by people who don&apos;t trust each other.</h2>
         </Reveal>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {AUDIENCE.map(({ Icon, who, gets }, i) => (
-            <Reveal key={who} delay={i * 90} className="rounded-2xl bg-card p-6 ring-1 ring-foreground/10">
-              <span className="grid size-10 place-items-center rounded-xl bg-muted text-foreground/80 ring-1 ring-foreground/5">
+            <Reveal key={who} delay={i * 90} className="group rounded-2xl bg-card p-6 shadow-panel ring-1 ring-ink-900/[0.06] transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+              <span className="grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-brand-600/10 transition-colors duration-300 group-hover:bg-brand-600 group-hover:text-mint">
                 <Icon className="size-5" />
               </span>
               <h3 className="mt-4 font-semibold">{who}</h3>
@@ -268,7 +272,7 @@ export default function Home() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
           <Reveal>
             <Eyebrow>Five possible answers</Eyebrow>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">A scan never says &ldquo;maybe&rdquo;.</h2>
+            <h2 className="mt-2 font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">A scan never says &ldquo;maybe&rdquo;.</h2>
             <p className="mt-4 text-muted-foreground">
               A copied QR still passes the blockchain check, so every scan is also weighed against that pack&apos;s own history:
               impossible travel, a spread across cities, scans outside the custody path.
@@ -280,11 +284,11 @@ export default function Home() {
               </Link>
             </Button>
           </Reveal>
-          <ul className="divide-y overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/10">
+          <ul className="divide-y divide-ink-900/[0.05] overflow-hidden rounded-2xl bg-card shadow-panel ring-1 ring-ink-900/[0.06]">
             {(Object.keys(VERDICT_UI) as Verdict[]).map((v, i) => {
               const { eyebrow, desc, Icon, tone } = VERDICT_UI[v]
               return (
-                <Reveal as="li" key={v} delay={i * 80} className="flex gap-4 p-5 transition-colors hover:bg-muted/40">
+                <Reveal as="li" key={v} delay={i * 80} className="flex gap-4 p-5 transition-colors hover:bg-brand-50/50">
                   <span className={cn('grid size-10 shrink-0 place-items-center rounded-full ring-1', tone.soft, tone.ring)}>
                     <Icon className={cn('size-5', tone.text)} />
                   </span>
@@ -303,7 +307,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-8">
         <Reveal className="mb-10 max-w-2xl">
           <Eyebrow>Privacy by design</Eyebrow>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Public where it matters. Private where it counts.</h2>
+          <h2 className="mt-2 font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">Public where it matters. Private where it counts.</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-2">
           <Reveal>
@@ -331,12 +335,12 @@ export default function Home() {
       <section id="faq" className="mx-auto max-w-3xl scroll-mt-16 px-4 pb-20 sm:px-8">
         <Reveal className="text-center">
           <Eyebrow>Questions</Eyebrow>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">The hard ones, answered.</h2>
+          <h2 className="mt-2 font-display text-4xl leading-[1.05] text-brand-950 sm:text-5xl">The hard ones, answered.</h2>
         </Reveal>
         <div className="mt-10 space-y-3">
           {FAQ.map(({ q, a }, i) => (
             <Reveal key={q} delay={i * 70}>
-              <details className="group rounded-2xl bg-card ring-1 ring-foreground/10 open:shadow-md">
+              <details className="group rounded-2xl bg-card ring-1 ring-ink-900/[0.06] transition-shadow open:shadow-lift">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 font-medium [&::-webkit-details-marker]:hidden">
                   {q}
                   <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-180" />
@@ -350,32 +354,28 @@ export default function Home() {
 
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-8">
-        <Reveal className="relative overflow-hidden rounded-3xl bg-slate-950 px-6 py-16 text-center text-white sm:px-12">
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgb(255_255_255/0.07)_1px,transparent_0)] bg-[length:22px_22px]"
-          />
-          <div aria-hidden className="absolute -top-24 left-1/2 size-96 -translate-x-1/2 rounded-full bg-sky-500/30 blur-3xl animate-drift" />
-          <h2 className="relative text-3xl font-semibold tracking-tight text-balance sm:text-4xl">Make every pack you handle provable.</h2>
-          <p className="relative mx-auto mt-4 max-w-lg text-slate-300">
+        <Reveal className="relative isolate overflow-hidden rounded-3xl px-6 py-20 text-center text-white sm:px-12">
+          <AmbientBackground variant="dark" />
+          <h2 className="relative font-display text-4xl leading-[1.05] sm:text-6xl">Make every pack you handle <em className="text-mint">provable.</em></h2>
+          <p className="relative mx-auto mt-4 max-w-lg text-brand-100/75">
             Manufacturers, distributors and pharmacies apply once. After the regulator approves you, your licence is written
             on-chain and your dashboard unlocks.
           </p>
           <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button size="lg" className="h-11 bg-white px-6 text-slate-950 hover:bg-white/90" asChild>
+            <Button size="lg" className="h-11 bg-mint px-6 text-brand-900 hover:bg-white" asChild>
               <Link href="/apply">
                 Apply for a licence
                 <ArrowRight />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="h-11 border-white/20 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white" asChild>
+            <Button size="lg" variant="outline" className="h-11 border-mint/20 bg-transparent px-6 text-white hover:border-mint/40 hover:bg-white/10 hover:text-white" asChild>
               <Link href="/login">Sign in</Link>
             </Button>
           </div>
         </Reveal>
       </section>
 
-      <footer className="border-t bg-card/50">
+      <footer className="border-t bg-card/80 backdrop-blur">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 text-sm sm:grid-cols-[2fr_1fr_1fr] sm:px-8">
           <div>
             <Brand />
@@ -399,7 +399,12 @@ export default function Home() {
 }
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs font-semibold tracking-[0.18em] text-sky-700 uppercase">{children}</p>
+  return (
+    <p className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-brand-600 uppercase">
+      <span className="h-px w-6 bg-brand-400" />
+      {children}
+    </p>
+  )
 }
 
 function DataColumn({
@@ -416,11 +421,11 @@ function DataColumn({
   tone: 'sky' | 'slate'
 }) {
   return (
-    <div className="h-full rounded-2xl bg-card p-6 ring-1 ring-foreground/10">
+    <div className="h-full rounded-2xl bg-card p-6 shadow-panel ring-1 ring-ink-900/[0.06]">
       <span
         className={cn(
           'grid size-10 place-items-center rounded-xl ring-1',
-          tone === 'sky' ? 'bg-sky-50 text-sky-700 ring-sky-600/15' : 'bg-slate-100 text-slate-700 ring-slate-500/15',
+          tone === 'sky' ? 'bg-brand-50 text-brand-700 ring-brand-600/15' : 'bg-ink-100 text-ink-700 ring-ink-500/15',
         )}
       >
         <Icon className="size-5" />
@@ -430,7 +435,7 @@ function DataColumn({
       <ul className="mt-5 space-y-2.5">
         {items.map((item) => (
           <li key={item} className="flex items-center gap-2.5 text-sm">
-            <Check className={cn('size-4', tone === 'sky' ? 'text-sky-600' : 'text-slate-500')} strokeWidth={2.5} />
+            <Check className={cn('size-4', tone === 'sky' ? 'text-brand-600' : 'text-ink-500')} strokeWidth={2.5} />
             {item}
           </li>
         ))}

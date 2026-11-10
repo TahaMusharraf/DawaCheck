@@ -16,10 +16,10 @@ export function VerifyLoading() {
   }, [])
 
   return (
-    <section className="rounded-2xl bg-card/80 p-6 shadow-sm ring-1 ring-foreground/10 backdrop-blur animate-rise">
+    <section className="rounded-2xl bg-card/85 p-6 shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md animate-rise">
       <div className="relative mx-auto size-24 overflow-hidden rounded-xl ring-1 ring-foreground/10">
         <ScanLine className="absolute inset-0 m-auto size-12 text-muted-foreground/40" strokeWidth={1.25} />
-        <div className="absolute inset-x-2 top-2 h-0.5 rounded-full bg-sky-500 shadow-[0_0_12px_2px] shadow-sky-400/60 animate-scan" />
+        <div className="absolute inset-x-2 top-2 h-0.5 rounded-full bg-brand-500 shadow-[0_0_12px_2px] shadow-brand-400/60 animate-scan" />
       </div>
 
       <p className="mt-5 text-center text-sm font-medium">Verifying this pack…</p>
@@ -39,11 +39,11 @@ export function VerifyLoading() {
               <span
                 className={cn(
                   'grid size-5 place-items-center rounded-full ring-1 transition-colors duration-300',
-                  done ? 'bg-emerald-500 text-white ring-emerald-500' : 'ring-foreground/15',
+                  done ? 'bg-brand-500 text-white ring-brand-500' : 'ring-foreground/15',
                 )}
               >
                 {done && <Check className="size-3" strokeWidth={3} />}
-                {active && <LoaderCircle className="size-3 animate-spin text-sky-600" />}
+                {active && <LoaderCircle className="size-3 animate-spin text-brand-600" />}
               </span>
               {label}
             </li>

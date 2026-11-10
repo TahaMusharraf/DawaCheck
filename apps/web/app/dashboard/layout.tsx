@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Ban, Hourglass, LogOut } from 'lucide-react'
+import { AmbientBackground } from '@/components/backgrounds/ambient'
 import { Brand } from '@/components/brand'
 import { AppSidebar, MobileTopbar } from '@/components/dashboard/sidebar'
 import { Button } from '@/components/ui/button'
@@ -13,6 +14,7 @@ import type { Me } from '@/lib/types'
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { me, loading } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!loading && !me) router.replace('/login')
@@ -22,11 +24,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (me.org.status !== 'LICENSED') return <NotLicensed me={me} />
 
   return (
-    <div className="min-h-dvh bg-muted/40">
+    <div className="relative isolate min-h-dvh">
+      <AmbientBackground fixed />
       <AppSidebar me={me} />
       <MobileTopbar me={me} />
       <main className="px-4 py-6 sm:px-6 lg:ml-64 lg:px-10 lg:py-10">
-        <div className="mx-auto max-w-6xl">{children}</div>
+        {/* Keyed by path so each page plays its entrance when you navigate. */}
+        <div key={pathname} className="mx-auto max-w-6xl animate-page">
+          {children}
+        </div>
       </main>
     </div>
   )
@@ -34,13 +40,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 function ShellSkeleton() {
   return (
-    <div className="min-h-dvh bg-muted/40">
-      <div className="fixed inset-y-0 left-0 hidden w-64 border-r bg-background p-5 lg:block">
-        <Skeleton className="h-7 w-32" />
-        <Skeleton className="mt-6 h-14 w-full rounded-xl" />
-        <div className="mt-6 space-y-2">
+    <div className="min-h-dvh">
+      <div className="fixed inset-y-0 left-0 hidden w-64 bg-sidebar p-5 lg:block">
+        <div className="h-8 w-32 rounded-lg bg-white/[0.06] animate-breathe" />
+        <div className="mt-6 h-14 w-full rounded-xl bg-white/[0.05] animate-breathe" />
+        <div className="mt-8 space-y-2">
           {Array.from({ length: 6 }, (_, i) => (
-            <Skeleton key={i} className="h-9 w-full" />
+            <div key={i} className="h-8 w-full rounded-lg bg-white/[0.04] animate-breathe" style={{ animationDelay: `${i * 120}ms` }} />
           ))}
         </div>
       </div>
@@ -63,8 +69,9 @@ function NotLicensed({ me }: { me: Me }) {
   const Icon = pending ? Hourglass : Ban
 
   return (
-    <main className="grid min-h-dvh place-items-center bg-muted/40 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-sm ring-1 ring-foreground/10 animate-rise">
+    <main className="relative isolate grid min-h-dvh place-items-center px-4">
+      <AmbientBackground />
+      <div className="w-full max-w-md rounded-2xl bg-card/90 p-8 text-center shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur animate-rise">
         <Brand className="justify-center" />
         <span
           className={

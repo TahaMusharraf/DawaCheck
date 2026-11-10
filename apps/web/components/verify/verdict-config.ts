@@ -20,15 +20,18 @@ export type Tone = {
   ring: string
   solid: string
   glow: string
+  /** Aurora palette [base, body, highlight, ribbon] that tints the page background. */
+  aurora: [string, string, string, string]
 }
 
 export const TONES = {
   green: {
-    text: 'text-emerald-700',
-    soft: 'bg-emerald-50',
-    ring: 'ring-emerald-600/20',
-    solid: 'bg-emerald-500',
-    glow: 'bg-emerald-400/25',
+    text: 'text-brand-700',
+    soft: 'bg-brand-50',
+    ring: 'ring-brand-600/20',
+    solid: 'bg-brand-500',
+    glow: 'bg-brand-400/25',
+    aurora: ['#f6f8f3', '#e1f3e6', '#cdffdc', '#68ba7f'],
   },
   red: {
     text: 'text-red-700',
@@ -36,6 +39,7 @@ export const TONES = {
     ring: 'ring-red-600/20',
     solid: 'bg-red-500',
     glow: 'bg-red-400/25',
+    aurora: ['#faf6f3', '#fbe7e2', '#f6d2c9', '#e3907f'],
   },
   amber: {
     text: 'text-amber-700',
@@ -43,6 +47,7 @@ export const TONES = {
     ring: 'ring-amber-600/25',
     solid: 'bg-amber-500',
     glow: 'bg-amber-400/25',
+    aurora: ['#faf8f1', '#fbefd6', '#f6e2b0', '#dcb35f'],
   },
   orange: {
     text: 'text-orange-700',
@@ -50,13 +55,15 @@ export const TONES = {
     ring: 'ring-orange-600/25',
     solid: 'bg-orange-500',
     glow: 'bg-orange-400/25',
+    aurora: ['#faf7f2', '#fbeadb', '#f7d9bd', '#e2a06a'],
   },
   neutral: {
-    text: 'text-slate-700',
-    soft: 'bg-slate-50',
-    ring: 'ring-slate-600/15',
-    solid: 'bg-slate-400',
-    glow: 'bg-sky-300/20',
+    text: 'text-ink-700',
+    soft: 'bg-ink-50',
+    ring: 'ring-ink-600/15',
+    solid: 'bg-ink-400',
+    glow: 'bg-brand-300/20',
+    aurora: ['#f6f8f3', '#e4f4e8', '#cdffdc', '#93cfa5'],
   },
 } satisfies Record<string, Tone>
 

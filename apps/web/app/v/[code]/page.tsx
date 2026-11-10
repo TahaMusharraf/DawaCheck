@@ -100,8 +100,8 @@ export default function VerifyPage() {
 
 function ErrorCard({ title, message, retry }: { title: string; message: string; retry?: boolean }) {
   return (
-    <section className="rounded-2xl bg-card/80 p-6 text-center shadow-sm ring-1 ring-foreground/10 backdrop-blur animate-rise">
-      <span className="mx-auto grid size-14 place-items-center rounded-full bg-slate-100 text-slate-600 animate-pop">
+    <section className="rounded-2xl bg-card/85 p-6 text-center shadow-lift ring-1 ring-ink-900/[0.06] backdrop-blur-md animate-rise">
+      <span className="mx-auto grid size-14 place-items-center rounded-full bg-ink-100 text-ink-600 animate-pop">
         <CircleAlert className="size-7" strokeWidth={1.75} />
       </span>
       <h1 className="mt-4 text-lg font-semibold tracking-tight">{title}</h1>

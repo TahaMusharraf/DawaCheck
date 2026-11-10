@@ -77,9 +77,9 @@ function Sell() {
 
         <div className="space-y-6">
           {pending ? (
-            <Panel className="p-6 ring-2 ring-sky-500/40">
+            <Panel className="p-6 ring-2 ring-brand-500/40">
               <div className="flex items-start justify-between">
-                <span className="grid size-12 place-items-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-600/15 animate-pop">
+                <span className="grid size-12 place-items-center rounded-2xl bg-brand-50 text-brand-700 ring-1 ring-brand-600/15 animate-pop">
                   <Pill className="size-5" />
                 </span>
                 <Button variant="ghost" size="icon-sm" onClick={() => setPending(null)} aria-label="Cancel">
@@ -104,8 +104,11 @@ function Sell() {
             </Panel>
           ) : (
             <Panel className="flex flex-col items-center px-6 py-12 text-center">
-              <span className="grid size-12 place-items-center rounded-2xl bg-muted text-muted-foreground">
-                <ScanBarcode className="size-5" />
+              <span className="relative grid size-14 place-items-center">
+                <span className="absolute inset-0 rounded-2xl bg-brand-100/70 animate-pulse-ring" />
+                <span className="relative grid size-14 place-items-center rounded-2xl bg-gradient-to-b from-brand-50 to-brand-100 text-brand-600 ring-1 ring-brand-600/10 animate-float">
+                  <ScanBarcode className="size-6" />
+                </span>
               </span>
               <p className="mt-4 font-medium">Waiting for a pack</p>
               <p className="mt-1 max-w-xs text-sm text-muted-foreground">Hold the QR label in front of the camera, then confirm the sale.</p>
@@ -114,17 +117,17 @@ function Sell() {
 
           {sales.length > 0 && (
             <Panel title="Sold this session">
-              <ul className="divide-y">
+              <ul className="divide-y divide-ink-900/[0.05]">
                 {sales.map((s) => (
                   <li key={s.txHash} className="flex items-center gap-4 px-5 py-3.5 animate-rise">
-                    <CircleCheck className="size-5 shrink-0 text-emerald-600" />
+                    <CircleCheck className="size-5 shrink-0 text-brand-600" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-mono text-xs">{s.code}</p>
                       <p className="text-xs text-muted-foreground">
                         {formatDateTime(s.at)} · {s.remaining.toLocaleString()} left of this batch
                       </p>
                     </div>
-                    <a href={txUrl(s.txHash)} target="_blank" rel="noreferrer" aria-label="View transaction" className="text-sky-700">
+                    <a href={txUrl(s.txHash)} target="_blank" rel="noreferrer" aria-label="View transaction" className="text-brand-700">
                       <ExternalLink className="size-4" />
                     </a>
                   </li>

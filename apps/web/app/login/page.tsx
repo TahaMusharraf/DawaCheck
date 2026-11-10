@@ -45,7 +45,7 @@ export default function LoginPage() {
       <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
       <p className="mt-1 text-sm text-muted-foreground">For regulators, manufacturers, distributors and pharmacies.</p>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-4">
+      <form onSubmit={onSubmit} className="mt-8 space-y-4 short:mt-5 short:space-y-3">
         <FormField label="Email" htmlFor="email">
           <Input id="email" name="email" type="email" autoComplete="email" required placeholder="you@company.pk" />
         </FormField>
@@ -61,7 +61,7 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-muted-foreground">
+      <p className="mt-8 text-center text-sm text-muted-foreground short:mt-5">
         New organisation?{' '}
         <Link href="/apply" className="font-medium text-foreground underline-offset-4 hover:underline">
           Apply for a licence

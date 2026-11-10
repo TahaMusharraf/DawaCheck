@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Activity, MapPinned, PackageCheck, ScanLine, ShieldX } from 'lucide-react'
 import { RoleGate } from '@/components/dashboard/role-gate'
-import { EmptyState, ErrorState, ListSkeleton, PageHeader, Panel, StatCard } from '@/components/dashboard/ui'
+import { EmptyState, ErrorState, ListSkeleton, PageHeader, Panel, Segmented, StatCard, StatStrip } from '@/components/dashboard/ui'
 import { VERDICT_UI } from '@/components/verify/verdict-config'
 import { humanize } from '@/lib/format'
 import { useApi } from '@/lib/use-api'
@@ -43,7 +43,7 @@ function Analytics() {
         </Panel>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatStrip>
             <StatCard label="Total scans" Icon={ScanLine} value={totalScans?.toLocaleString() ?? '—'} />
             <StatCard
               label="Genuine on scan"
@@ -55,7 +55,7 @@ function Analytics() {
             />
             <StatCard label="Problem scans" Icon={ShieldX} tone="red" delay={120} value={bad?.toLocaleString() ?? '—'} hint="Not authentic, for any reason" />
             <StatCard label="Packs sold" Icon={Activity} tone="slate" delay={180} value={sold?.toLocaleString() ?? '—'} />
-          </div>
+          </StatStrip>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
             <Panel title="Scan results" description="Every verification, by verdict." delay={200}>
@@ -90,20 +90,7 @@ function Analytics() {
               description="Scans that were not authentic."
               delay={260}
               action={
-                <div className="flex gap-0.5 rounded-lg bg-muted p-0.5">
-                  {RANGES.map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => setDays(r)}
-                      className={cn(
-                        'rounded-md px-2.5 py-1 text-xs font-medium transition-all',
-                        days === r ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground',
-                      )}
-                    >
-                      {r}d
-                    </button>
-                  ))}
-                </div>
+                <Segmented size="sm" options={RANGES} value={days} onChange={setDays} label={(r) => `${r}d`} />
               }
             >
               <CityBars rows={heatmap.loading ? undefined : heatmap.data?.scans} error={heatmap.error} />
@@ -117,11 +104,11 @@ function Analytics() {
               {!o ? (
                 <ListSkeleton rows={4} />
               ) : (
-                <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-b-2xl bg-foreground/5">
+                <dl className="grid grid-cols-2 gap-px bg-ink-900/[0.06]">
                   {(['OPEN', 'INVESTIGATING', 'CONFIRMED', 'DISMISSED'] as AlertStatus[]).map((s) => (
                     <div key={s} className="bg-card p-5">
                       <dt className="text-sm text-muted-foreground">{humanize(s)}</dt>
-                      <dd className="mt-1 text-2xl font-semibold tabular-nums">
+                      <dd className="mt-1 font-display text-4xl leading-none text-brand-950 tabular-nums">
                         {(o.alerts.find((a) => a.status === s)?._count._all ?? 0).toLocaleString()}
                       </dd>
                     </div>
@@ -140,9 +127,9 @@ function Analytics() {
 function Bar({ value, max, className }: { value: number; max: number; className: string }) {
   const width = max ? Math.max((value / max) * 100, value ? 1.5 : 0) : 0
   return (
-    <div className="h-2 overflow-hidden rounded-full bg-muted">
+    <div className="h-2 overflow-hidden rounded-full bg-ink-100">
       <div
-        className={cn('h-full origin-left rounded-r-[4px] transition-[width] duration-700 ease-out group-hover:opacity-80', className)}
+        className={cn('h-full origin-left rounded-full animate-grow-x transition-[width,opacity] duration-700 ease-out group-hover:opacity-80', className)}
         style={{ width: `${width}%` }}
       />
     </div>
@@ -175,7 +162,7 @@ function CityBars({ rows, error }: { rows?: HeatmapRow[]; error?: string }) {
             <span>{r.city}</span>
             <span className="font-medium tabular-nums">{r._count._all.toLocaleString()}</span>
           </div>
-          <Bar value={r._count._all} max={max} className="bg-red-500" />
+          <Bar value={r._count._all} max={max} className="bg-gradient-to-r from-red-400 to-red-600" />
         </li>
       ))}
     </ul>
@@ -190,7 +177,7 @@ function OrgTable({ rows }: { rows: Overview['orgs'] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-muted-foreground">
+          <tr className="bg-ink-50/70 text-left text-[11px] tracking-[0.08em] text-ink-500 uppercase">
             <th className="px-5 py-3 font-medium">Role</th>
             {statuses.map((s) => (
               <th key={s} className="px-5 py-3 text-right font-medium">
@@ -199,9 +186,9 @@ function OrgTable({ rows }: { rows: Overview['orgs'] }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y border-t">
+        <tbody className="divide-y divide-ink-900/[0.05] border-t border-ink-900/[0.06]">
           {types.map((t) => (
-            <tr key={t}>
+            <tr key={t} className="transition-colors hover:bg-brand-50/50">
               <td className="px-5 py-3 font-medium">{humanize(t)}</td>
               {statuses.map((s) => (
                 <td key={s} className="px-5 py-3 text-right tabular-nums">
