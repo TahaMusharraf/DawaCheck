@@ -7,9 +7,8 @@ export interface PastScan {
 }
 
 export interface RuleInput {
-  history: PastScan[];          // this unit's earlier scans
-  current: PastScan;            // the scan being made now
-  custodyCities: Set<string>;   // every org the batch moved to
+  history: PastScan[];
+  current: PastScan;
   soldAt: Date | null;
   expiryDate: Date;
 }
@@ -26,33 +25,64 @@ const MAX_SCANS_AFTER_SALE = 8;
 export const RULES: { flag: string; check: (i: RuleInput) => number }[] = [
   { flag: 'IMPOSSIBLE_TRAVEL', check: impossibleTravel },
   { flag: 'GEOGRAPHIC_SPREAD', check: geographicSpread },
-  { flag: 'OUT_OF_CUSTODY', check: outOfCustody },
   { flag: 'DEVICE_DIVERSITY', check: deviceDiversity },
   { flag: 'EXCESSIVE_SCANS', check: excessiveScans },
   { flag: 'EXPIRED_CIRCULATING', check: expiredCirculating },
 ];
 
-function impossibleTravel({ history, current }: RuleInput) {
-  const prev = [...history].reverse().find((s) => s.lat !== null && s.lng !== null);
-  if (!prev || current.lat === null || current.lng === null) return 0;
+export function scoreRisk(input: RuleInput): {
+  score: number;
+  flags: string[];
+} {
+  const flags: string[] = [];
+  let score = 0;
 
-  const km = distanceKm(prev.lat!, prev.lng!, current.lat, current.lng);
-  // Two scans seconds apart can still differ by GPS noise, so ignore short hops.
-  if (km < 50) return 0;
-  const hours = (current.scannedAt.getTime() - prev.scannedAt.getTime()) / 3_600_000;
-  return hours <= 0 || km / hours > MAX_SPEED_KMH ? 50 : 0;
+  for (const rule of RULES) {
+    const weight = rule.check(input);
+    if (weight > 0) {
+      score += weight;
+      flags.push(rule.flag);
+    }
+  }
+
+  return { score, flags };
+}
+
+function impossibleTravel({ history, current }: RuleInput) {
+  const scans = [...history, current]
+    .filter((scan) => scan.lat !== null && scan.lng !== null)
+    .sort((a, b) => a.scannedAt.getTime() - b.scannedAt.getTime());
+
+  for (let i = 1; i < scans.length; i++) {
+    const previous = scans[i - 1];
+    const next = scans[i];
+    if (
+      previous.lat === null ||
+      previous.lng === null ||
+      next.lat === null ||
+      next.lng === null
+    ) {
+      continue;
+    }
+
+    const km = distanceKm(previous.lat, previous.lng, next.lat, next.lng);
+    if (km < 50) continue;
+
+    const hours =
+      (next.scannedAt.getTime() - previous.scannedAt.getTime()) / 3_600_000;
+    if (hours > 0 && km / hours > MAX_SPEED_KMH) return 50;
+  }
+
+  return 0;
 }
 
 function geographicSpread({ history, current }: RuleInput) {
   const cities = new Set(
-    [...history, current].map((s) => s.city?.trim().toLowerCase()).filter(Boolean),
+    [...history, current]
+      .map((s) => s.city?.trim().toLowerCase())
+      .filter(Boolean),
   );
   return cities.size > MAX_CITIES ? 40 : 0;
-}
-
-function outOfCustody({ current, custodyCities }: RuleInput) {
-  const city = current.city?.trim().toLowerCase();
-  return city && !custodyCities.has(city) ? 40 : 0;
 }
 
 function deviceDiversity({ history, current }: RuleInput) {
@@ -66,8 +96,10 @@ function excessiveScans({ history, current, soldAt }: RuleInput) {
   return afterSale.length >= MAX_SCANS_AFTER_SALE ? 20 : 0;
 }
 
-function expiredCirculating({ current, expiryDate }: RuleInput) {
-  return current.scannedAt > expiryDate ? 10 : 0;
+function expiredCirculating({ history, current, expiryDate }: RuleInput) {
+  return [...history, current].some((scan) => scan.scannedAt > expiryDate)
+    ? 10
+    : 0;
 }
 
 /** Great-circle distance (haversine). */
